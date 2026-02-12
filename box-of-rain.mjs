@@ -647,6 +647,47 @@ function render(diagram) {
   return canvas.toString();
 }
 
+// ─── SVG renderer ────────────────────────────────────────────────────────────
+
+function renderSvg(text) {
+  const lines = text.split('\n');
+  const maxLen = Math.max(...lines.map(l => l.length));
+
+  const fontSize = 14;
+  const charWidth = 8.41;
+  const lineHeight = fontSize;
+  const padding = 16;
+
+  const width = Math.ceil(maxLen * charWidth) + padding * 2;
+  const height = lines.length * lineHeight + padding * 2;
+
+  const textEls = lines.map((line, i) => {
+    const escaped = line
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    const y = padding + (i + 1) * lineHeight;
+    return `  <text x="${padding}" y="${y}" xml:space="preserve">${escaped}</text>`;
+  }).join('\n');
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
+  <style>
+    text {
+      font-family: 'SFMono-Regular', Menlo, Monaco, 'Courier New', monospace;
+      font-size: ${fontSize}px;
+      line-height: 1;
+      fill: #24292f;
+    }
+    @media (prefers-color-scheme: dark) {
+      text { fill: #e6edf3; }
+      .bg { fill: #161b22; }
+    }
+  </style>
+  <rect class="bg" width="100%" height="100%" fill="#f6f8fa" rx="6" />
+${textEls}
+</svg>`;
+}
+
 // ─── CLI entry point ──────────────────────────────────────────────────────────
 
 import { readFileSync } from 'fs';
@@ -660,6 +701,7 @@ box-of-rain - Generate beautiful ASCII box diagrams
 
 Usage:
   node box-of-rain.mjs <diagram.json|diagram.yaml>
+  node box-of-rain.mjs --svg <diagram.json|diagram.yaml>   # SVG output
   node box-of-rain.mjs --example
 
 Diagram JSON format (positions and sizes are optional — auto-layout fills them in):
@@ -732,21 +774,24 @@ function main() {
     process.exit(0);
   }
 
-  const filePath = resolve(args[0]);
+  const svg = args.includes('--svg');
+  const fileArgs = args.filter(a => !a.startsWith('--'));
+  const filePath = resolve(fileArgs[0]);
   try {
     const raw = readFileSync(filePath, 'utf-8');
     const ext = extname(filePath).toLowerCase();
     const diagram = (ext === '.yaml' || ext === '.yml')
       ? yaml.load(raw)
       : JSON.parse(raw);
-    console.log(render(diagram));
+    const text = render(diagram);
+    console.log(svg ? renderSvg(text) : text);
   } catch (err) {
     console.error(`Error: ${err.message}`);
     process.exit(1);
   }
 }
 
-export { render, autoLayout, Canvas, drawBox, drawConnection, resolveBox, getAnchor, BORDERS, SHADOW_CHAR };
+export { render, renderSvg, autoLayout, Canvas, drawBox, drawConnection, resolveBox, getAnchor, BORDERS, SHADOW_CHAR };
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   main();

@@ -1,29 +1,14 @@
 # box-of-rain
 
-Generate ASCII box diagrams from JSON or YAML. Supports nested boxes, arrow connections, auto-layout, multiple border styles, and shadows.
+Generate ASCII box diagrams from JSON or YAML. Supports nested boxes, arrow connections, auto-layout, multiple border styles, and shadows. Can output as plain text or svg. CLI or programmatically.
 
 This code is entirely AI generated. Be warned, take it for what you will. No promises.
 
-It's inspired by turbopuffer, planetscale, and oxide computing's ascii diagrams. It's meant to be a simple and effective way to generate diagrams through a rote interface, largely self-layouting.
+It's inspired by turbopuffer's, planetscale's, and oxide computing's ascii diagrams. It's meant to be a simple and effective way to generate diagrams through a rote interface, largely self-layouting.
 
 Of course, it's named as an homage to the inimitable Robert Hunter. Though he'd likely be disgusted, everything written below here is AI generated as well. But tiny, useful, isolated, and non-hosted libraries are probably the best use-case for AI.
 
-```
-╔══ Your Home WiFi ═╗          ╔══ China Cloud ═════╗
-║                   ║          ║                    ║░░
-║  ┏━━━━━━━━━━━━━┓  ║          ║  ┏━━━━━━━━━━━━━━┓  ║░░
-║  ┃             ┃  ║          ║  ┃ Vacuum Cloud ┃  ║░░
-║  ┃ Your iPhone ┃ ──────────────▶┃   Servers    ┃ ─────┐
-║  ┃             ┃  ║          ║  ┃              ┃  ║░░ │
-║  ┗━━━━━━━━━━━━━┛  ║          ║  ┗━━━━━━━━━━━━━━┛  ║░░ │
-║                   ║          ╚════════════════════╝░░ │
-║  ┏━━━━━━━━━━━━┓   ║           ░░░░░░░░░░░░░░░░░░░░░░░ │
-║  ┃            ┃   ║                                   │
-║  ┃ Your Robot ┃◀───────────── commands ───────────────┘
-║  ┃            ┃   ║
-║  ┗━━━━━━━━━━━━┛   ║
-╚═══════════════════╝
-```
+<img src="docs/vacuum.svg" alt="vacuum robot diagram" />
 
 ## Usage
 
@@ -119,40 +104,9 @@ You can mix auto and manual positioning — set `x`/`y`/`width`/`height` on spec
 
 ## More examples
 
-```bash
-node box-of-rain.mjs examples/turbopuffer.json
-```
-```
-                        ╔══ turbopuffer ═══════════════════════╗
-╔══════════╗            ║  ┏━━━━━━━━━━━┓     ┏━━━━━━━━━━━━━━┓  ║░░
-║          ║░░          ║  ┃  Memory/  ┃     ┃    Object    ┃  ║░░
-║  client  ║░──── API ────▶┃ SSD Cache ┃ ───▶┃ Storage (S3) ┃  ║░░
-║          ║░░          ║  ┃           ┃     ┃              ┃  ║░░
-╚══════════╝░░          ║  ┗━━━━━━━━━━━┛     ┗━━━━━━━━━━━━━━┛  ║░░
- ░░░░░░░░░░░░░          ╚══════════════════════════════════════╝░░
-                         ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-```
+<img src="docs/turbopuffer.svg" alt="turbopuffer diagram" />
 
-```bash
-node box-of-rain.mjs examples/microservices.json
-```
-```
-                      ╔══ Cloud Platform ════════════════════════════════╗
-                      ║                                                  ║░░
-                      ║  ┏━━━━━━━━━━┓     ┌──────────┐     ┏━━━━━━━━━━┓  ║░░
-                      ║  ┃   API    ┃     │   Auth   │     ┃          ┃  ║░░
-                      ║  ┃ Gateway  ┃ ─┐─▶│ Service  │  ┌─▶┃ Database ┃  ║░░
-╭──────────╮          ║  ┃          ┃  │  │          │  │  ┃          ┃  ║░░
-│          │          ║  ┗━━━━━━━━━━┛  │  └──────────┘  │  ┗━━━━━━━━━━┛  ║░░
-│   User   │ ─ HTTPS ▶║                │                │                ║░░
-│          │          ║                │  ┌──────────┐  │                ║░░
-╰──────────╯          ║                │  │  Orders  │  │                ║░░
-                      ║                └─▶│ Service  │ ─┘                ║░░
-                      ║                   │          │                   ║░░
-                      ║                   └──────────┘                   ║░░
-                      ╚══════════════════════════════════════════════════╝░░
-                       ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-```
+<img src="docs/microservices.svg" alt="microservices diagram" />
 
 ## Programmatic usage
 
