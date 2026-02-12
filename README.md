@@ -10,6 +10,10 @@ Of course, it's named as an homage to the inimitable Robert Hunter. Though he'd 
 
 <img src="docs/vacuum.svg" alt="vacuum robot diagram" />
 
+## Why SVGs examples here and not plain text?
+
+Github has an unconfigurable line-height on code blocks, so you can't set `line-height: 1`. This causes a drift between lines making the charts look chonkier than they intend to be. That's all.
+
 ## Usage
 
 ```bash
