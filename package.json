@@ -1,0 +1,25 @@
+{
+  "name": "box-of-rain",
+  "version": "1.0.0",
+  "description": "Generate beautiful ASCII box diagrams with borders, arrows, shadows, and nesting",
+  "type": "module",
+  "main": "box-of-rain.mjs",
+  "bin": {
+    "box-of-rain": "./box-of-rain.mjs"
+  },
+  "scripts": {
+    "example": "node box-of-rain.mjs --example",
+    "test": "node --test test.mjs"
+  },
+  "keywords": [
+    "ascii",
+    "diagram",
+    "cli",
+    "box-drawing",
+    "chart"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "js-yaml": "^4.1.1"
+  }
+}

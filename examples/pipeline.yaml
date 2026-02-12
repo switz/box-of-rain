@@ -1,0 +1,36 @@
+boxes:
+  - id: repo
+    content:
+      - GitHub
+      - Repo
+    border: rounded
+  - id: ci
+    title: CI Pipeline
+    border: double
+    shadow: true
+    children:
+      - id: build
+        content: [Build]
+        border: bold
+      - id: test
+        content: [Test]
+        border: bold
+      - id: deploy
+        content: [Deploy]
+        border: bold
+  - id: prod
+    content:
+      - Production
+    border: double
+
+connections:
+  - from: repo
+    to: build
+    label: push
+  - from: build
+    to: test
+  - from: test
+    to: deploy
+  - from: deploy
+    to: prod
+    label: ship

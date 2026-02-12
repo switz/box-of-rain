@@ -1,0 +1,34 @@
+{
+  "boxes": [
+    {
+      "id": "client",
+      "content": ["client"],
+      "border": "double",
+      "shadow": true
+    },
+    {
+      "id": "turbo",
+      "border": "double",
+      "shadow": true,
+      "title": "turbopuffer",
+      "children": [
+        {
+          "id": "cache",
+          "y": 0,
+          "content": ["Memory/", "SSD Cache"],
+          "border": "bold"
+        },
+        {
+          "id": "s3",
+          "y": 0,
+          "content": ["Object", "Storage (S3)"],
+          "border": "bold"
+        }
+      ]
+    }
+  ],
+  "connections": [
+    { "from": "client", "to": "cache", "label": "API" },
+    { "from": "cache", "to": "s3" }
+  ]
+}
