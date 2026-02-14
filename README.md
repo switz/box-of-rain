@@ -8,6 +8,18 @@ It's inspired by turbopuffer's, planetscale's, and oxide computing's ascii diagr
 
 Of course, it's named as an homage to the inimitable Robert Hunter. Though he'd likely be disgusted, everything written below here is AI generated as well. But tiny, useful, isolated, and non-hosted libraries are probably the best use-case for AI.
 
+## Examples
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/microservices.svg">
+  <img src="docs/microservices.svg" alt="Microservices diagram">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/vacuum.svg">
+  <img src="docs/vacuum.svg" alt="Vacuum diagram">
+</picture>
+
 ## Install
 
 ```bash
@@ -57,6 +69,11 @@ A diagram is a recursive tree of nodes. Each node can contain text or nested chi
 }
 ```
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/example.svg">
+  <img src="docs/example.svg" alt="Example diagram">
+</picture>
+
 ### `children` is polymorphic
 
 - `"children": "Hello"` — single line of text
@@ -101,7 +118,7 @@ Arrows are routed automatically based on the anchor positions:
 ## Border styles
 
 ```
-single:  ┌──────┐    double:  ╔══════╗    bold:  ┏━━━━━━┓    rounded: ╭──────╮    dashed: ┌┄┄┄┄┄┄┐
+single:  ┌──────┐    double:  ╔══════╗    bold:  ┏━━━━━━┓    rounded: ╭──────╮    dashed: ┌┄┄┄┄┄┄┐a
          │      │             ║      ║           ┃      ┃             │      │            ┆      ┆
          └──────┘             ╚══════╝           ┗━━━━━━┛             ╰──────╯            └┄┄┄┄┄┄┘
 ```
@@ -149,6 +166,18 @@ pnpm test        # run tests
 pnpm typecheck   # type-check
 pnpm build       # build to dist/
 ```
+
+## More Examples
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/fastfish.svg">
+  <img src="docs/fastfish.svg" alt="Fastfish diagram">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/pipeline.svg">
+  <img src="docs/pipeline.svg" alt="Pipeline diagram">
+</picture>
 
 ## License
 
