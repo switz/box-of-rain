@@ -10,6 +10,8 @@ Of course, it's named as an homage to the inimitable Robert Hunter. Though he'd 
 
 ## Examples
 
+These examples are SVGs because Github doesn't allow for customizing line-height of code blocks. If you put this on a website, you might want to set `line-height: 1` to avoid clipping.
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/microservices.svg">
   <img src="docs/microservices.svg" alt="Microservices diagram">
