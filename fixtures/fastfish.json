@@ -1,0 +1,25 @@
+{
+  "children": [
+    {
+      "id": "client",
+      "children": ["client"],
+      "border": "rounded"
+    },
+    {
+      "id": "fastfish",
+      "title": "fastfish",
+      "border": "double",
+      "shadow": true,
+      "children": [
+        { "id": "cache", "children": ["SSD Cache"], "border": "bold" },
+        { "id": "s3", "children": ["Storage (S3)"] }
+      ],
+      "connections": [
+        { "from": "cache", "to": "s3" }
+      ]
+    }
+  ],
+  "connections": [
+    { "from": "client", "to": "cache" }
+  ]
+}

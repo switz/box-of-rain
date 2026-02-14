@@ -1,6 +1,6 @@
-boxes:
+children:
   - id: repo
-    content:
+    children:
       - GitHub
       - Repo
     border: rounded
@@ -10,16 +10,21 @@ boxes:
     shadow: true
     children:
       - id: build
-        content: [Build]
+        children: [Build]
         border: bold
       - id: test
-        content: [Test]
+        children: [Test]
         border: bold
       - id: deploy
-        content: [Deploy]
+        children: [Deploy]
         border: bold
+    connections:
+      - from: build
+        to: test
+      - from: test
+        to: deploy
   - id: prod
-    content:
+    children:
       - Production
     border: double
 
@@ -27,10 +32,6 @@ connections:
   - from: repo
     to: build
     label: push
-  - from: build
-    to: test
-  - from: test
-    to: deploy
   - from: deploy
     to: prod
     label: ship

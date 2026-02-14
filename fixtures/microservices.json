@@ -1,0 +1,29 @@
+{
+  "children": [
+    {
+      "id": "user",
+      "children": ["User"],
+      "border": "rounded"
+    },
+    {
+      "id": "cloud",
+      "border": "double",
+      "shadow": true,
+      "title": "Cloud Platform",
+      "children": [
+        { "id": "gateway", "children": ["API", "Gateway"], "border": "bold" },
+        { "id": "auth", "children": ["Auth", "Service"] },
+        { "id": "orders", "children": ["Orders", "Service"] },
+        { "id": "db", "children": ["Database"], "border": "bold" }
+      ],
+      "connections": [
+        { "from": "gateway", "to": "auth" },
+        { "from": "gateway", "to": "orders" },
+        { "from": "orders", "to": "db" }
+      ]
+    }
+  ],
+  "connections": [
+    { "from": "user", "to": "cloud", "label": "HTTPS" }
+  ]
+}

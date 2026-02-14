@@ -1,6 +1,6 @@
 # box-of-rain
 
-Generate ASCII box diagrams from JSON or YAML. Supports nested boxes, arrow connections, auto-layout, multiple border styles, and shadows. Can output as plain text or svg. CLI or programmatically.
+Generate ASCII box diagrams from JSON or YAML. Supports nested boxes, arrow connections, auto-layout, multiple border styles, and shadows. Can output as plain text or SVG. CLI or programmatic.
 
 This code is entirely AI generated. Be warned, take it for what you will. No promises.
 
@@ -8,30 +8,31 @@ It's inspired by turbopuffer's, planetscale's, and oxide computing's ascii diagr
 
 Of course, it's named as an homage to the inimitable Robert Hunter. Though he'd likely be disgusted, everything written below here is AI generated as well. But tiny, useful, isolated, and non-hosted libraries are probably the best use-case for AI.
 
-<img src="docs/vacuum.svg" alt="vacuum robot diagram" />
+## Install
 
-## Why SVGs examples here and not plain text?
+<!-- ```bash
+npm install box-of-rain
+``` -->
 
-Github has an unconfigurable line-height on code blocks, so you can't set `line-height: 1`. This causes a drift between lines making the charts look chonkier than they intend to be. That's all.
-
-## Usage
+## CLI Usage
 
 ```bash
-node box-of-rain.mjs diagram.json      # render a diagram from JSON
-node box-of-rain.mjs diagram.yaml     # render a diagram from YAML
-node box-of-rain.mjs --example         # run the built-in example
+box-of-rain diagram.json        # render a diagram from JSON
+box-of-rain diagram.yaml        # render a diagram from YAML
+box-of-rain --svg diagram.json  # SVG output
+box-of-rain --example           # run the built-in example
 ```
 
-## JSON format
+## Schema
 
-A diagram has `boxes` and `connections`. Positions and sizes are optional — the auto-layout engine computes them if omitted.
+A diagram is a recursive tree of nodes. Each node can contain text or nested child nodes. Connections can be defined at any level.
 
 ```json
 {
-  "boxes": [
+  "children": [
     {
       "id": "web",
-      "content": ["Frontend"],
+      "children": ["Frontend"],
       "border": "rounded"
     },
     {
@@ -40,31 +41,40 @@ A diagram has `boxes` and `connections`. Positions and sizes are optional — th
       "border": "double",
       "shadow": true,
       "children": [
-        { "id": "api", "content": ["API Server"], "border": "bold" },
-        { "id": "db", "content": ["Database"] }
+        { "id": "api", "children": ["API Server"], "border": "bold" },
+        { "id": "db", "children": ["Database"] }
+      ],
+      "connections": [
+        { "from": "api", "to": "db" }
       ]
     }
   ],
   "connections": [
-    { "from": "web", "to": "api", "label": "HTTPS" },
-    { "from": "api", "to": "db" }
+    { "from": "web", "to": "api", "label": "HTTPS" }
   ]
 }
 ```
 
-### Box properties
+### `children` is polymorphic
 
-| Property   | Type     | Default    | Description                                    |
-|------------|----------|------------|------------------------------------------------|
-| `id`       | string   | —          | Unique identifier (required for connections)   |
-| `content`  | string[] | —          | Text lines, centered inside the box            |
-| `border`   | string   | `"single"` | `single`, `double`, `bold`, or `rounded`       |
-| `title`    | string   | —          | Text on the top border                         |
-| `shadow`   | boolean  | `false`    | Adds a `░` shadow on the right and bottom      |
-| `children` | Box[]    | —          | Nested boxes (coordinates relative to parent)  |
-| `x`, `y`   | number   | auto       | Position (top-left corner)                     |
-| `width`    | number   | auto       | Box width in characters                        |
-| `height`   | number   | auto       | Box height in characters                       |
+- `"children": "Hello"` — single line of text
+- `"children": ["Line 1", "Line 2"]` — multi-line text
+- `"children": [{ "id": "a", ... }]` — nested child boxes (recursive)
+
+### Node properties
+
+| Property         | Type                        | Default    | Description                                    |
+|------------------|-----------------------------|------------|------------------------------------------------|
+| `id`             | string                      | —          | Unique identifier (required for connections)   |
+| `children`       | string \| string[] \| Node[] | —         | Text content or nested boxes                   |
+| `border`         | string                      | `"single"` | `single`, `double`, `bold`, or `rounded`       |
+| `title`          | string                      | —          | Text on the top border                         |
+| `shadow`         | boolean                     | `false`    | Adds a `░` shadow on the right and bottom      |
+| `disabled`       | boolean                     | `false`    | Shade with `░` and strikethrough title          |
+| `childDirection` | string                      | `"horizontal"` | `horizontal` or `vertical` child layout   |
+| `x`, `y`         | number                      | auto       | Position (top-left corner)                     |
+| `width`, `height` | number                     | auto       | Box dimensions in characters                   |
+| `connections`    | Connection[]                | —          | Connections between child IDs at this level     |
 
 ### Connection properties
 
@@ -73,10 +83,10 @@ A diagram has `boxes` and `connections`. Positions and sizes are optional — th
 | `from`     | string | —         | Source box `id`                        |
 | `to`       | string | —         | Target box `id`                        |
 | `label`    | string | —         | Text label on the arrow                |
-| `fromSide` | string | `"right"` | Which side the arrow exits from        |
-| `toSide`   | string | `"left"`  | Which side the arrow enters            |
+| `fromSide` | string | auto      | Which side the arrow exits from        |
+| `toSide`   | string | auto      | Which side the arrow enters            |
 
-Sides are `right`, `left`, `top`, or `bottom`.
+Sides are `right`, `left`, `top`, or `bottom`. When omitted, sides are auto-detected based on relative box positions.
 
 ## Arrow routing
 
@@ -106,21 +116,15 @@ When boxes don't have explicit `x`/`y` positions, the layout engine:
 
 You can mix auto and manual positioning — set `x`/`y`/`width`/`height` on specific boxes and leave the rest to auto-layout.
 
-## More examples
-
-<img src="docs/turbopuffer.svg" alt="turbopuffer diagram" />
-
-<img src="docs/microservices.svg" alt="microservices diagram" />
-
 ## Programmatic usage
 
-```javascript
-import { render } from './box-of-rain.mjs';
+```typescript
+import { render, renderSvg } from 'box-of-rain';
 
 const diagram = {
-  boxes: [
-    { id: 'a', content: ['Hello'], border: 'double' },
-    { id: 'b', content: ['World'], border: 'bold' },
+  children: [
+    { id: 'a', children: ['Hello'], border: 'double' },
+    { id: 'b', children: ['World'], border: 'bold' },
   ],
   connections: [
     { from: 'a', to: 'b' },
@@ -128,6 +132,20 @@ const diagram = {
 };
 
 console.log(render(diagram));
+
+// Or as SVG:
+const svg = renderSvg(render(diagram));
+```
+
+Input is validated at runtime with Zod. Invalid schemas throw a `ZodError` with details.
+
+## Development
+
+```bash
+pnpm install
+pnpm test        # run tests
+pnpm typecheck   # type-check
+pnpm build       # build to dist/
 ```
 
 ## License

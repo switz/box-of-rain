@@ -1,0 +1,27 @@
+{
+  "children": [
+    {
+      "id": "home1",
+      "title": "Your Home WiFi",
+      "border": "double",
+      "shadow": true,
+      "children": [
+        { "id": "iphone", "children": ["Your iPhone"], "border": "bold" },
+        { "id": "robot", "children": ["Your Robot"], "border": "bold" }
+      ]
+    },
+    {
+      "id": "cloud",
+      "title": "China",
+      "border": "double",
+      "shadow": true,
+      "children": [
+        { "id": "server", "children": ["Company Servers"], "border": "dashed" }
+      ]
+    }
+  ],
+  "connections": [
+    { "from": "iphone", "to": "server", "label": "data" },
+    { "from": "server", "to": "robot", "toSide": "right", "label": "commands" }
+  ]
+}
