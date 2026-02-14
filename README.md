@@ -120,7 +120,7 @@ Arrows are routed automatically based on the anchor positions:
 ## Border styles
 
 ```
-single:  ┌──────┐    double:  ╔══════╗    bold:  ┏━━━━━━┓    rounded: ╭──────╮    dashed: ┌┄┄┄┄┄┄┐a
+single:  ┌──────┐    double:  ╔══════╗    bold:  ┏━━━━━━┓    rounded: ╭──────╮    dashed: ┌┄┄┄┄┄┄┐
          │      │             ║      ║           ┃      ┃             │      │            ┆      ┆
          └──────┘             ╚══════╝           ┗━━━━━━┛             ╰──────╯            └┄┄┄┄┄┄┘
 ```

@@ -21,7 +21,15 @@ function pickOppositeCorner(hDir: number, yDir: number): string {
 
 function placeLabel(canvas: Canvas, label: string, segStart: number, segEnd: number, y: number): void {
   const padded = ` ${label} `;
-  const midX = Math.floor((segStart + segEnd) / 2) - Math.floor(padded.length / 2);
+  const lo = Math.min(segStart, segEnd);
+  const hi = Math.max(segStart, segEnd);
+  const segLen = hi - lo;
+  let midX = Math.floor((lo + hi) / 2) - Math.floor(padded.length / 2);
+  // Clamp so at least 1 dash remains on each side when there's room
+  if (segLen >= padded.length + 2) {
+    midX = Math.max(midX, lo + 1);
+    midX = Math.min(midX, hi - padded.length - 1);
+  }
   canvas.writeText(midX, y, padded);
 }
 
@@ -194,12 +202,22 @@ function drawLShape(
   canvas.set(dst.x, dst.y, arrowHead);
 
   if (label) {
+    const padded = ` ${label} `;
     const srcLen = Math.abs(midX - src.x);
     const dstLen = Math.abs(dst.x - midX);
+    // Prefer longer segment, fall back to other if label doesn't fit
     if (srcLen >= dstLen) {
-      placeLabel(canvas, label, src.x, midX, src.y);
+      if (srcLen >= padded.length) {
+        placeLabel(canvas, label, src.x, midX, src.y);
+      } else {
+        placeLabel(canvas, label, midX, dst.x, dst.y);
+      }
     } else {
-      placeLabel(canvas, label, midX, dst.x, dst.y);
+      if (dstLen >= padded.length) {
+        placeLabel(canvas, label, midX, dst.x, dst.y);
+      } else {
+        placeLabel(canvas, label, src.x, midX, src.y);
+      }
     }
   }
 }

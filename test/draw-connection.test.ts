@@ -107,6 +107,24 @@ describe('drawConnection', () => {
     assert.ok(connRow.includes('test'), 'label should appear on the arrow line');
   });
 
+  it('label has at least one dash on each side', () => {
+    const boxes: NodeDef[] = [
+      { id: 'a', x: 0, y: 0, width: 5, height: 3 },
+      { id: 'b', x: 20, y: 0, width: 5, height: 3 },
+    ];
+    const c = new Canvas(30, 5);
+    drawConnection(c, { from: 'a', to: 'b', label: 'HTTPS' }, boxes);
+    const row = c.grid[1].join('');
+    const labelIdx = row.indexOf('HTTPS');
+    assert.ok(labelIdx > 0, 'label should be present');
+    // At least one dash before the label (after the box edge)
+    const beforeLabel = row.substring(5, labelIdx);
+    assert.ok(beforeLabel.includes('─'), 'should have at least one dash before label');
+    // At least one dash after the label (before the arrow head)
+    const afterLabel = row.substring(labelIdx + 'HTTPS'.length, 20);
+    assert.ok(afterLabel.includes('─'), 'should have at least one dash after label');
+  });
+
   it('handles missing IDs gracefully', () => {
     const boxes: NodeDef[] = [{ id: 'a', x: 0, y: 0, width: 5, height: 3 }];
     const c = new Canvas(25, 5);

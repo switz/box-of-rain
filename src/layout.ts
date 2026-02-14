@@ -54,7 +54,7 @@ function computeLayerGaps(layers: NodeDef[][], connections: ConnectionDef[], def
   }
   for (let i = 0; i < layers.length; i++) {
     const maxLabel = pairMax.get(i) || 0;
-    gaps.push(Math.max(defaultGap, maxLabel + 4));
+    gaps.push(Math.max(defaultGap, maxLabel + 6));
   }
   return gaps;
 }
