@@ -10,9 +10,9 @@ Of course, it's named as an homage to the inimitable Robert Hunter. Though he'd 
 
 ## Install
 
-<!-- ```bash
+```bash
 npm install box-of-rain
-``` -->
+```
 
 ## CLI Usage
 
@@ -21,6 +21,8 @@ box-of-rain diagram.json        # render a diagram from JSON
 box-of-rain diagram.yaml        # render a diagram from YAML
 box-of-rain --svg diagram.json  # SVG output
 box-of-rain --example           # run the built-in example
+
+npx box-of-rain --example
 ```
 
 ## Schema
@@ -67,7 +69,7 @@ A diagram is a recursive tree of nodes. Each node can contain text or nested chi
 |------------------|-----------------------------|------------|------------------------------------------------|
 | `id`             | string                      | —          | Unique identifier (required for connections)   |
 | `children`       | string \| string[] \| Node[] | —         | Text content or nested boxes                   |
-| `border`         | string                      | `"single"` | `single`, `double`, `bold`, or `rounded`       |
+| `border`         | string                      | `"single"` | `single`, `double`, `bold`, `rounded`, or `dashed` |
 | `title`          | string                      | —          | Text on the top border                         |
 | `shadow`         | boolean                     | `false`    | Adds a `░` shadow on the right and bottom      |
 | `disabled`       | boolean                     | `false`    | Shade with `░` and strikethrough title          |
@@ -99,9 +101,9 @@ Arrows are routed automatically based on the anchor positions:
 ## Border styles
 
 ```
-single:  ┌──────┐    double:  ╔══════╗    bold:  ┏━━━━━━┓    rounded: ╭──────╮
-         │      │             ║      ║           ┃      ┃             │      │
-         └──────┘             ╚══════╝           ┗━━━━━━┛             ╰──────╯
+single:  ┌──────┐    double:  ╔══════╗    bold:  ┏━━━━━━┓    rounded: ╭──────╮    dashed: ┌┄┄┄┄┄┄┐
+         │      │             ║      ║           ┃      ┃             │      │            ┆      ┆
+         └──────┘             ╚══════╝           ┗━━━━━━┛             ╰──────╯            └┄┄┄┄┄┄┘
 ```
 
 ## Auto-layout
