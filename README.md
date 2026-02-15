@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/box-of-rain.svg">
+  <img src="docs/box-of-rain.svg" alt="Box-of-rain diagram">
+</picture>
+
 # box-of-rain
 
 [![Tests](https://github.com/switz/box-of-rain/actions/workflows/test.yml/badge.svg)](https://github.com/switz/box-of-rain/actions/workflows/test.yml)

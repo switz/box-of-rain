@@ -1,0 +1,29 @@
+{
+  "children": [
+    {
+      "id": "box",
+      "title": "Box",
+      "border": "double",
+      "shadow": true,
+      "children": "Box"
+    },
+    {
+      "id": "of",
+      "title": "Of",
+      "border": "double",
+      "shadow": true,
+      "children": "Of"
+    },
+    {
+      "id": "rain",
+      "title": "Rain",
+      "border": "double",
+      "shadow": true,
+      "children": "Rain"
+    }
+  ],
+  "connections": [
+    { "from": "box", "to": "of" },
+    { "from": "of", "to": "rain" }
+  ]
+}
