@@ -121,23 +121,9 @@ You can write diagrams in [Mermaid](https://mermaid.js.org/) syntax instead of J
 
 ### Flowchart
 
-````mermaid
-flowchart LR
-    subgraph home1[Your Home WiFi]:::shadow
-        iphone((Your iPhone))
-        robot((Your Robot))
-    end
-    subgraph cloud[China]:::shadow
-        server{Company Servers}
-    end
-    iphone -->|data| server
-    server -->|commands| robot
-    %% @route server-->robot toSide=right
-````
-
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/vacuum-mermaid.svg">
-  <img src="docs/vacuum-mermaid.svg" alt="Mermaid vacuum diagram">
+  <img src="docs/vacuum-mermaid.svg" alt="Mermaid flowchart diagram">
 </picture>
 
 Supported flowchart features:
@@ -163,13 +149,10 @@ Supported flowchart features:
 
 ### Sequence diagrams
 
-````mermaid
-sequenceDiagram
-    participant A as Alice
-    participant B as Bob
-    A->>B: Hello
-    B-->>A: Hi back
-````
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/sequence-mermaid.svg">
+  <img src="docs/sequence-mermaid.svg" alt="Mermaid sequence diagram">
+</picture>
 
 Supported sequence features:
 
