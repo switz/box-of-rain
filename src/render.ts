@@ -20,7 +20,7 @@ export function render(input: NodeDef, options?: LayoutOptions): string {
   }
 
   for (const conn of connections) {
-    drawConnection(canvas, conn, boxes);
+    drawConnection(canvas, conn, boxes, connections);
   }
 
   return canvas.toString();

@@ -78,8 +78,8 @@ A diagram is a recursive tree of nodes. Each node can contain text or nested chi
 ```
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/example.svg">
-  <img src="docs/example.svg" alt="Example diagram">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/example-mermaid.svg">
+  <img src="docs/example-mermaid.svg" alt="Example diagram">
 </picture>
 
 ### `children` is polymorphic
@@ -121,10 +121,37 @@ You can write diagrams in [Mermaid](https://mermaid.js.org/) syntax instead of J
 
 ### Flowchart
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/vacuum-mermaid.svg">
-  <img src="docs/vacuum-mermaid.svg" alt="Mermaid flowchart diagram">
-</picture>
+```
+flowchart LR
+    subgraph home1[Your Home WiFi]:::shadow
+        iphone((Your iPhone))
+        robot((Your Robot))
+    end
+    subgraph cloud[China]:::shadow
+        server{Company Servers}
+    end
+    iphone -->|data| server
+    server -->|commands| robot
+    %% @route server-->robot toSide=right
+```
+
+```
+╔══ Your Home WiFi ═╗            ╔══ China ══════════════╗
+║                   ║░░          ║                       ║░░
+║  ┏━━━━━━━━━━━━━┓  ║░░          ║  ┌┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┐  ║░░
+║  ┃             ┃  ║░░          ║  ┆                 ┆  ║░░
+║  ┃ Your iPhone ┃ ───── data ─────▶┆ Company Servers ┆ ─────┐
+║  ┃             ┃  ║░░          ║  ┆                 ┆  ║░░ │
+║  ┗━━━━━━━━━━━━━┛  ║░░          ║  └┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┘  ║░░ │
+║                   ║░░          ╚═══════════════════════╝░░ │
+║  ┏━━━━━━━━━━━━━┓  ║░░           ░░░░░░░░░░░░░░░░░░░░░░░░░░ │
+║  ┃             ┃  ║░░                                      │
+║  ┃ Your Robot  ┃◀─────────────── commands ─────────────────┘
+║  ┃             ┃  ║░░
+║  ┗━━━━━━━━━━━━━┛  ║░░
+╚═══════════════════╝░░
+ ░░░░░░░░░░░░░░░░░░░░░░
+```
 
 Supported flowchart features:
 
@@ -149,10 +176,21 @@ Supported flowchart features:
 
 ### Sequence diagrams
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/sequence-mermaid.svg">
-  <img src="docs/sequence-mermaid.svg" alt="Mermaid sequence diagram">
-</picture>
+```
+sequenceDiagram
+    participant A as Alice
+    participant B as Bob
+    A->>B: Hello
+```
+
+```
+┌── Alice ──┐           ┌── Bob ────┐
+│           │           │           │
+│  ┌─────┐  │           │  ┌─────┐  │
+│  │     │ ──── Hello ────▶│     │  │
+│  └─────┘  │           │  └─────┘  │
+└───────────┘           └───────────┘
+```
 
 Supported sequence features:
 
@@ -163,7 +201,7 @@ Supported sequence features:
 
 ### Extensions
 
-Two asciibox-specific extensions are available using Mermaid-compatible syntax:
+Two library-specific extensions are available using Mermaid-compatible syntax:
 
 **`:::shadow`** — adds a shadow to a node or subgraph:
 

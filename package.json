@@ -1,6 +1,6 @@
 {
   "name": "box-of-rain",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Generate beautiful ASCII box diagrams with borders, arrows, shadows, and nesting",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -29,6 +29,7 @@
     "dev": "tsup --watch",
     "test": "node --import tsx --test test/*.test.ts",
     "typecheck": "tsc --noEmit",
+    "generate-docs": "for f in fixtures/*; do name=$(basename \"$f\"); base=\"${name%.*}\"; ext=\"${name##*.}\"; if [ \"$ext\" = \"mmd\" ] || [ \"$ext\" = \"mermaid\" ]; then out=\"docs/${base}-mermaid.svg\"; else out=\"docs/${base}.svg\"; fi; node --import tsx src/cli.ts --svg \"$f\" > \"$out\"; done",
     "prepublishOnly": "npm run build"
   },
   "keywords": [

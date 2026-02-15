@@ -147,21 +147,71 @@ export function flowchartToNodeDef(ast: FlowchartAST): NodeDef {
 // ── Sequence → NodeDef ─────────────────────────────────────────────────────
 
 export function sequenceToNodeDef(ast: SequenceAST): NodeDef {
-  const children: NodeDef[] = ast.participants.map(p => ({
-    id: p.id,
-    children: p.alias || p.id,
-    border: (p.isActor ? 'rounded' : 'single') as BorderStyle,
-  }));
+  const numMessages = ast.messages.length;
+  if (numMessages === 0) {
+    // No messages — just lay out participants horizontally
+    return {
+      childDirection: 'horizontal',
+      children: ast.participants.map(p => ({
+        id: p.id,
+        children: p.alias || p.id,
+        border: (p.isActor ? 'rounded' : 'single') as BorderStyle,
+      })),
+    };
+  }
 
-  const connections: ConnectionDef[] = ast.messages.map(m => ({
-    from: m.from,
-    to: m.to,
+  // Compute sizing
+  const participantNames = ast.participants.map(p => p.alias || p.id);
+  const maxNameLen = Math.max(...participantNames.map(n => n.length), 3);
+  const innerW = maxNameLen + 2; // padding inside step box
+  // Column must fit: border(1) + pad(2) + innerW + pad(2) + border(1)
+  // and also the title: border(1) + "── " + title + " ──" + border(1)
+  const maxTitleW = Math.max(...participantNames.map(n => n.length + 6));
+  const colW = Math.max(innerW + 6, maxTitleW);
+  const stepH = 3;
+
+  const maxLabel = Math.max(...ast.messages.map(m => m.label?.length ?? 0), 0);
+  const gap = Math.max(maxLabel + 6, 8); // enough room for label + arrow dashes
+
+  // Build participant index for position lookup
+  const pIndex = new Map<string, number>();
+  ast.participants.forEach((p, i) => pIndex.set(p.id, i));
+
+  // Build a column per participant with step boxes
+  const columns: NodeDef[] = ast.participants.map((p, col) => {
+    const steps: NodeDef[] = Array.from({ length: numMessages }, (_, i) => ({
+      id: `${p.id}_${i}`,
+      children: ' ',
+      width: innerW,
+      height: stepH,
+    }));
+
+    return {
+      title: p.alias || p.id,
+      x: 1 + col * (colW + gap),
+      childDirection: 'vertical' as const,
+      border: (p.isActor ? 'rounded' : 'single') as BorderStyle,
+      children: steps,
+    };
+  });
+
+  // Messages connect step boxes across columns
+  const connections: ConnectionDef[] = ast.messages.map((m, i) => ({
+    from: `${m.from}_${i}`,
+    to: `${m.to}_${i}`,
     ...(m.label ? { label: m.label } : {}),
   }));
 
+  // Compute total dimensions
+  const lastColRight = 1 + (ast.participants.length - 1) * (colW + gap) + colW;
+  const totalW = lastColRight + 1;
+  const colInnerH = numMessages * (stepH + 1) + 1;
+  const totalH = colInnerH + 4; // column border + outer padding
+
   return {
-    childDirection: 'vertical',
-    children,
-    ...(connections.length > 0 ? { connections } : {}),
+    width: totalW,
+    height: totalH,
+    children: columns,
+    connections,
   };
 }

@@ -324,40 +324,60 @@ describe('flowchartToNodeDef', () => {
 // ── Sequence conversion ────────────────────────────────────────────────────
 
 describe('sequenceToNodeDef', () => {
-  it('creates vertical layout with participant boxes', () => {
+  it('creates column layout with participant titles and step boxes', () => {
     const ast = parseSequence(`sequenceDiagram
       participant A as Alice
       participant B as Bob
       A->>B: Hello
     `);
     const def = sequenceToNodeDef(ast);
-    assert.equal(def.childDirection, 'vertical');
+    // Columns for each participant
     const children = def.children as NodeDef[];
     assert.equal(children.length, 2);
-    assert.equal(children[0].id, 'A');
-    assert.equal(children[0].children, 'Alice');
+    assert.equal(children[0].title, 'Alice');
     assert.equal(children[0].border, 'single');
+    assert.equal(children[0].childDirection, 'vertical');
+    // Each column has step boxes for messages
+    const steps = children[0].children as NodeDef[];
+    assert.equal(steps.length, 1); // one message = one step
+    assert.equal(steps[0].id, 'A_0');
   });
 
   it('uses rounded border for actors', () => {
     const ast = parseSequence(`sequenceDiagram
       actor U as User
+      participant B as Bob
+      U->>B: Hi
     `);
     const def = sequenceToNodeDef(ast);
     const children = def.children as NodeDef[];
     assert.equal(children[0].border, 'rounded');
   });
 
-  it('creates connections from messages', () => {
+  it('creates connections between step boxes', () => {
     const ast = parseSequence(`sequenceDiagram
       A->>B: Hello
       B-->>A: World
     `);
     const def = sequenceToNodeDef(ast);
     assert.equal(def.connections!.length, 2);
-    assert.equal(def.connections![0].from, 'A');
-    assert.equal(def.connections![0].to, 'B');
+    assert.equal(def.connections![0].from, 'A_0');
+    assert.equal(def.connections![0].to, 'B_0');
     assert.equal(def.connections![0].label, 'Hello');
+    assert.equal(def.connections![1].from, 'B_1');
+    assert.equal(def.connections![1].to, 'A_1');
+  });
+
+  it('falls back to horizontal layout with no messages', () => {
+    const ast = parseSequence(`sequenceDiagram
+      participant A as Alice
+      participant B as Bob
+    `);
+    const def = sequenceToNodeDef(ast);
+    assert.equal(def.childDirection, 'horizontal');
+    const children = def.children as NodeDef[];
+    assert.equal(children[0].id, 'A');
+    assert.equal(children[0].children, 'Alice');
   });
 });
 
@@ -376,7 +396,10 @@ describe('parseMermaid', () => {
 
   it('detects sequence diagram', () => {
     const def = parseMermaid('sequenceDiagram\n  A->>B: Hello');
-    assert.equal(def.childDirection, 'vertical');
+    // Sequence with messages uses column layout with explicit positions
+    assert.ok(def.connections);
+    assert.equal(def.connections!.length, 1);
+    assert.equal(def.connections![0].label, 'Hello');
   });
 
   it('throws on unsupported type', () => {
@@ -560,25 +583,22 @@ describe('mermaid/json parity', () => {
     assert.equal(renderMermaid(mermaid), render(json));
   });
 
-  it('sequence diagram with participants and messages', () => {
-    const json: NodeDef = {
-      childDirection: 'vertical',
-      children: [
-        { id: 'A', children: 'Alice', border: 'single' },
-        { id: 'B', children: 'Bob', border: 'single' },
-      ],
-      connections: [
-        { from: 'A', to: 'B', label: 'Hello' },
-        { from: 'B', to: 'A', label: 'Hi' },
-      ],
-    };
+  it('sequence diagram renders with participant columns and messages', () => {
     const mermaid = `sequenceDiagram
       participant A as Alice
       participant B as Bob
       A->>B: Hello
       B-->>A: Hi
     `;
-    assert.equal(renderMermaid(mermaid), render(json));
+    const output = renderMermaid(mermaid);
+    // Participant titles appear as column headers
+    assert.ok(output.includes('Alice'));
+    assert.ok(output.includes('Bob'));
+    // Message labels appear as connection labels
+    assert.ok(output.includes('Hello'));
+    assert.ok(output.includes('Hi'));
+    // Arrow heads present
+    assert.ok(output.includes('▶') || output.includes('◀'));
   });
 
   it('multi-line text via br tags', () => {

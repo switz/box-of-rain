@@ -19,6 +19,19 @@ function pickOppositeCorner(hDir: number, yDir: number): string {
   return '┐';
 }
 
+/** Merge two box-drawing characters at a junction point into a tee or cross. */
+function mergeJunction(existing: string, incoming: string, hDir: number): string {
+  const corners = '┐┘┌└';
+  if (!corners.includes(existing)) return incoming;
+  if (existing === incoming) return incoming;
+  // Two different corners at the same spot → tee junction
+  // hDir > 0: line comes from left → ├ ; hDir < 0: line comes from right → ┤
+  if (corners.includes(existing) && corners.includes(incoming)) {
+    return hDir > 0 ? '┤' : '├';
+  }
+  return incoming;
+}
+
 function placeLabel(canvas: Canvas, label: string, segStart: number, segEnd: number, y: number): void {
   const padded = ` ${label} `;
   const lo = Math.min(segStart, segEnd);
@@ -33,7 +46,7 @@ function placeLabel(canvas: Canvas, label: string, segStart: number, segEnd: num
   canvas.writeText(midX, y, padded);
 }
 
-export function drawConnection(canvas: Canvas, conn: ConnectionDef, boxes: NodeDef[]): void {
+export function drawConnection(canvas: Canvas, conn: ConnectionDef, boxes: NodeDef[], allConnections?: ConnectionDef[]): void {
   const { from, to, label } = conn;
 
   const fromResolved = resolveBox(from, boxes);
@@ -84,8 +97,10 @@ export function drawConnection(canvas: Canvas, conn: ConnectionDef, boxes: NodeD
     // Straight horizontal arrow
     drawStraight(canvas, src, dst, arrowHead, label);
   } else {
-    // L-shaped routing
-    drawLShape(canvas, src, dst, arrowHead, label);
+    // L-shaped routing — compute a shared midX across sibling connections
+    // (connections from the same source exiting the same side)
+    const midX = computeLShapeMidX(src, dst, label, fromSide, from, boxes, allConnections);
+    drawLShape(canvas, src, dst, arrowHead, label, midX);
   }
 }
 
@@ -161,11 +176,58 @@ function drawStraight(
   for (let col = minX + 1; col < maxX; col++) {
     canvas.set(col, src.y, '─');
   }
-  canvas.set(maxX, dst.y, arrowHead);
+  canvas.set(dst.x, dst.y, arrowHead);
 
   if (label) {
     placeLabel(canvas, label, minX + 1, maxX, src.y);
   }
+}
+
+/** Compute a midX for an L-shaped connection, ensuring the label fits
+ *  and all sibling connections from the same source share the same midX. */
+function computeLShapeMidX(
+  src: { x: number; y: number },
+  dst: { x: number; y: number },
+  label: string | undefined,
+  fromSide: Side,
+  fromId: string,
+  boxes: NodeDef[],
+  allConnections?: ConnectionDef[],
+): number {
+  const hDir = dst.x > src.x ? 1 : -1;
+
+  // Find all sibling L-shaped connections from the same source & side
+  // and compute the minimum segment length needed for any of their labels
+  let maxMinSeg = 0;
+  const siblings = allConnections?.filter(c => c.from === fromId) ?? [];
+  for (const sib of siblings) {
+    const sibTo = resolveBox(sib.to, boxes);
+    if (!sibTo) continue;
+    const sibDst = getAnchor(sibTo, 'left'); // approximate
+    if (sibDst.y === src.y) continue; // straight, not L-shaped
+    if (sib.label) {
+      const padded = ` ${sib.label} `;
+      maxMinSeg = Math.max(maxMinSeg, padded.length + 2);
+    }
+  }
+
+  let midX = Math.floor((src.x + dst.x) / 2);
+
+  if (maxMinSeg > 0) {
+    // Ensure the dst segment (closer to target) is long enough for labels
+    const dstLen = Math.abs(dst.x - midX);
+    if (dstLen < maxMinSeg) {
+      midX = dst.x - hDir * maxMinSeg;
+      // Clamp: midX must stay between src and dst
+      if (hDir > 0) {
+        midX = Math.max(midX, src.x + 1);
+      } else {
+        midX = Math.min(midX, src.x - 1);
+      }
+    }
+  }
+
+  return midX;
 }
 
 function drawLShape(
@@ -174,8 +236,8 @@ function drawLShape(
   dst: { x: number; y: number },
   arrowHead: string,
   label: string | undefined,
+  midX: number,
 ): void {
-  const midX = Math.floor((src.x + dst.x) / 2);
   const hDir = dst.x > src.x ? 1 : -1;
   const yDir = dst.y > src.y ? 1 : -1;
 
@@ -184,8 +246,11 @@ function drawLShape(
     canvas.set(col, src.y, '─');
   }
 
-  // First corner
-  canvas.set(midX, src.y, pickCorner(hDir, yDir));
+  // First corner — merge with existing character if another connection
+  // already drew a corner here (e.g. sibling L-shapes sharing a junction)
+  const existing = canvas.get(midX, src.y);
+  const corner = pickCorner(hDir, yDir);
+  canvas.set(midX, src.y, mergeJunction(existing, corner, hDir));
 
   // Vertical segment
   for (let row = src.y + yDir; row !== dst.y; row += yDir) {
@@ -205,19 +270,11 @@ function drawLShape(
     const padded = ` ${label} `;
     const srcLen = Math.abs(midX - src.x);
     const dstLen = Math.abs(dst.x - midX);
-    // Prefer longer segment, fall back to other if label doesn't fit
-    if (srcLen >= dstLen) {
-      if (srcLen >= padded.length) {
-        placeLabel(canvas, label, src.x, midX, src.y);
-      } else {
-        placeLabel(canvas, label, midX, dst.x, dst.y);
-      }
-    } else {
-      if (dstLen >= padded.length) {
-        placeLabel(canvas, label, midX, dst.x, dst.y);
-      } else {
-        placeLabel(canvas, label, src.x, midX, src.y);
-      }
+    // Prefer dst segment (closer to target), fall back to src
+    if (dstLen >= padded.length) {
+      placeLabel(canvas, label, midX, dst.x, dst.y);
+    } else if (srcLen >= padded.length) {
+      placeLabel(canvas, label, src.x, midX, src.y);
     }
   }
 }
