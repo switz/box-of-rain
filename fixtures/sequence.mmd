@@ -1,0 +1,8 @@
+sequenceDiagram
+    participant A as Alice
+    participant B as Bob
+    participant C as Server
+    A->>B: Hello Bob
+    B->>C: Auth request
+    C-->>B: Auth response
+    B-->>A: Hi Alice

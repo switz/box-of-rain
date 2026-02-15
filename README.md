@@ -1,6 +1,10 @@
 # box-of-rain
 
-Generate ASCII box diagrams from JSON or YAML. Supports nested boxes, arrow connections, auto-layout, multiple border styles, and shadows. Can output as plain text or SVG. CLI or programmatic.
+[![Tests](https://github.com/switz/box-of-rain/actions/workflows/test.yml/badge.svg)](https://github.com/switz/box-of-rain/actions/workflows/test.yml)
+[![min+gzip size](https://img.shields.io/bundlejs/size/box-of-rain)](https://bundlejs.com/?q=box-of-rain)
+[![npm](https://img.shields.io/npm/v/box-of-rain)](https://www.npmjs.com/package/box-of-rain)
+
+Generate ASCII box diagrams from JSON, YAML, or Mermaid. Supports nested boxes, arrow connections, auto-layout, multiple border styles, and shadows. Can output as plain text or SVG. CLI or programmatic.
 
 This code is entirely AI generated. Be warned, take it for what you will. No promises.
 
@@ -31,10 +35,12 @@ npm install box-of-rain
 ## CLI Usage
 
 ```bash
-box-of-rain diagram.json        # render a diagram from JSON
-box-of-rain diagram.yaml        # render a diagram from YAML
-box-of-rain --svg diagram.json  # SVG output
-box-of-rain --example           # run the built-in example
+box-of-rain diagram.json          # render a diagram from JSON
+box-of-rain diagram.yaml          # render a diagram from YAML
+box-of-rain diagram.mmd           # render a diagram from Mermaid
+box-of-rain --mermaid diagram.txt # force Mermaid parsing
+box-of-rain --svg diagram.json    # SVG output
+box-of-rain --example             # run the built-in example
 
 npx box-of-rain --example
 ```
@@ -109,6 +115,87 @@ A diagram is a recursive tree of nodes. Each node can contain text or nested chi
 
 Sides are `right`, `left`, `top`, or `bottom`. When omitted, sides are auto-detected based on relative box positions.
 
+## Mermaid Support
+
+You can write diagrams in [Mermaid](https://mermaid.js.org/) syntax instead of JSON/YAML. Flowcharts and sequence diagrams are supported.
+
+### Flowchart
+
+````mermaid
+flowchart LR
+    subgraph home1[Your Home WiFi]:::shadow
+        iphone((Your iPhone))
+        robot((Your Robot))
+    end
+    subgraph cloud[China]:::shadow
+        server{Company Servers}
+    end
+    iphone -->|data| server
+    server -->|commands| robot
+    %% @route server-->robot toSide=right
+````
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/vacuum-mermaid.svg">
+  <img src="docs/vacuum-mermaid.svg" alt="Mermaid vacuum diagram">
+</picture>
+
+Supported flowchart features:
+
+- **Direction:** `flowchart LR`, `RL`, `TD`/`TB`, `BT` (also `graph`)
+- **Node shapes** map to border styles:
+
+  | Mermaid | Border |
+  |---------|--------|
+  | `A[text]` | `single` |
+  | `A(text)` / `A([text])` | `rounded` |
+  | `A[[text]]` / `A[(text)]` | `double` |
+  | `A((text))` / `A{{text}}` | `bold` |
+  | `A{text}` | `dashed` |
+
+- **Edges:** `-->`, `---`, `-.->`, `==>` with optional `|label|` or `-- label -->` syntax
+- **Chained edges:** `A --> B --> C`
+- **Subgraphs:** `subgraph id[Title] ... end`, including nesting
+- **Comments:** `%%`
+- **Semicolons:** `A[One]; B[Two]` on the same line
+- **Quoted text:** `A["Hello World"]`
+- **Line breaks:** `A[Line 1<br>Line 2]`
+
+### Sequence diagrams
+
+````mermaid
+sequenceDiagram
+    participant A as Alice
+    participant B as Bob
+    A->>B: Hello
+    B-->>A: Hi back
+````
+
+Supported sequence features:
+
+- `participant` and `actor` declarations (actors get `rounded` borders)
+- Aliases: `participant A as Alice`
+- Message types: `->>`, `-->>`, `-x`, `--x`, `-)`, `--)`
+- Implicit participants from messages
+
+### Extensions
+
+Two asciibox-specific extensions are available using Mermaid-compatible syntax:
+
+**`:::shadow`** — adds a shadow to a node or subgraph:
+
+```
+A[Server]:::shadow
+subgraph cloud[Cloud]:::shadow
+```
+
+**`%% @route`** — controls connection routing with `fromSide`/`toSide`:
+
+```
+%% @route server-->robot toSide=right
+%% @route A-->B fromSide=bottom toSide=top
+```
+
 ## Arrow routing
 
 Arrows are routed automatically based on the anchor positions:
@@ -156,6 +243,27 @@ console.log(render(diagram));
 
 // Or as SVG:
 const svg = renderSvg(render(diagram));
+```
+
+### From Mermaid
+
+```typescript
+import { renderMermaid, parseMermaid } from 'box-of-rain';
+
+// One-step render:
+console.log(renderMermaid(`
+  flowchart LR
+    A[Frontend] --> B[API] --> C[Database]
+`));
+
+// Or parse first, then render:
+import { render } from 'box-of-rain';
+const nodeDef = parseMermaid(`
+  sequenceDiagram
+    Alice->>Bob: Hello
+    Bob-->>Alice: Hi
+`);
+console.log(render(nodeDef));
 ```
 
 Input is validated at runtime with Zod. Invalid schemas throw a `ZodError` with details.

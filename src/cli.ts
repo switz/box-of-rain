@@ -3,6 +3,7 @@ import { resolve, extname } from 'node:path';
 import yaml from 'js-yaml';
 import { render, renderSvg } from './render.js';
 import type { NodeDef } from './schema.js';
+import { parseMermaid } from './mermaid/index.js';
 
 function printUsage(): void {
   console.log(`
@@ -10,7 +11,9 @@ box-of-rain - Generate beautiful ASCII box diagrams
 
 Usage:
   box-of-rain <diagram.json|diagram.yaml>
-  box-of-rain --svg <diagram.json|diagram.yaml>   # SVG output
+  box-of-rain <diagram.mmd|diagram.mermaid>        # Mermaid input
+  box-of-rain --mermaid <file>                      # Force mermaid parsing
+  box-of-rain --svg <diagram.json|diagram.yaml>    # SVG output
   box-of-rain --example
 
 Diagram JSON format (positions and sizes are optional — auto-layout fills them in):
@@ -122,15 +125,22 @@ function main(): void {
   }
 
   const svg = args.includes('--svg');
+  const mermaidFlag = args.includes('--mermaid');
   const fileArgs = args.filter(a => !a.startsWith('--'));
   const filePath = resolve(fileArgs[0]);
   try {
     const raw = readFileSync(filePath, 'utf-8');
     const ext = extname(filePath).toLowerCase();
-    const parsed = (ext === '.yaml' || ext === '.yml')
-      ? yaml.load(raw)
-      : JSON.parse(raw);
-    const diagram = migrate(parsed as Record<string, unknown>);
+    const isMermaid = mermaidFlag || ext === '.mmd' || ext === '.mermaid';
+    let diagram: NodeDef;
+    if (isMermaid) {
+      diagram = parseMermaid(raw);
+    } else {
+      const parsed = (ext === '.yaml' || ext === '.yml')
+        ? yaml.load(raw)
+        : JSON.parse(raw);
+      diagram = migrate(parsed as Record<string, unknown>);
+    }
     const text = render(diagram);
     console.log(svg ? renderSvg(text) : text);
   } catch (err) {

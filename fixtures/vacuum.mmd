@@ -1,0 +1,11 @@
+flowchart LR
+    subgraph home1[Your Home WiFi]:::shadow
+        iphone((Your iPhone))
+        robot((Your Robot))
+    end
+    subgraph cloud[China]:::shadow
+        server{Company Servers}
+    end
+    iphone -->|data| server
+    server -->|commands| robot
+    %% @route server-->robot toSide=right
