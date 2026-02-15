@@ -1,0 +1,25 @@
+{
+  "children": [
+    {
+      "id": "web",
+      "children": ["Frontend"],
+      "border": "rounded"
+    },
+    {
+      "id": "platform",
+      "title": "Cloud Platform",
+      "border": "double",
+      "shadow": true,
+      "children": [
+        { "id": "api", "children": ["API Server"], "border": "bold" },
+        { "id": "db", "children": ["Database"] }
+      ],
+      "connections": [
+        { "from": "api", "to": "db" }
+      ]
+    }
+  ],
+  "connections": [
+    { "from": "web", "to": "api", "label": "HTTPS" }
+  ]
+}

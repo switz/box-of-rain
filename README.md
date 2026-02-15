@@ -78,8 +78,8 @@ A diagram is a recursive tree of nodes. Each node can contain text or nested chi
 ```
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/example-mermaid.svg">
-  <img src="docs/example-mermaid.svg" alt="Example diagram">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/example.svg">
+  <img src="docs/example.svg" alt="Example diagram">
 </picture>
 
 ### `children` is polymorphic
