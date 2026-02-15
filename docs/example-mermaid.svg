@@ -18,7 +18,7 @@
   <text x="16" y="72" xml:space="preserve">                                  ┌──▶│ Database │</text>
   <text x="16" y="86" xml:space="preserve">┌──────────┐      ┌────────────┐  │   │          │</text>
   <text x="16" y="100" xml:space="preserve">│          │      │            │  │   └──────────┘</text>
-  <text x="16" y="114" xml:space="preserve">│ Frontend │ ────▶│ API Server │ ─┐</text>
+  <text x="16" y="114" xml:space="preserve">│ Frontend │ ────▶│ API Server │ ─┤</text>
   <text x="16" y="128" xml:space="preserve">│          │      │            │  │</text>
   <text x="16" y="142" xml:space="preserve">└──────────┘      └────────────┘  │   ┌──────────┐</text>
   <text x="16" y="156" xml:space="preserve">                                  │   │          │</text>
