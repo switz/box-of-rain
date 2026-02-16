@@ -34,20 +34,18 @@ These examples are SVGs because Github doesn't allow for customizing line-height
 ## Install
 
 ```bash
-npm install box-of-rain
+pnpm install box-of-rain
 ```
 
 ## CLI Usage
 
 ```bash
-box-of-rain diagram.json          # render a diagram from JSON
-box-of-rain diagram.yaml          # render a diagram from YAML
-box-of-rain diagram.mmd           # render a diagram from Mermaid
-box-of-rain --mermaid diagram.txt # force Mermaid parsing
-box-of-rain --svg diagram.json    # SVG output
-box-of-rain --example             # run the built-in example
-
-npx box-of-rain --example
+npx box-of-rain --example             # run the built-in example
+npx box-of-rain diagram.json          # render a diagram from JSON
+npx box-of-rain diagram.yaml          # render a diagram from YAML
+npx box-of-rain diagram.mmd           # render a diagram from Mermaid
+npx box-of-rain --mermaid diagram.txt # force Mermaid parsing
+npx box-of-rain --svg diagram.json    # SVG output
 ```
 
 ## Schema
