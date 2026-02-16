@@ -39,6 +39,10 @@
     "box-drawing",
     "chart"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/switz/box-of-rain.git"
+  },
   "license": "MIT",
   "dependencies": {
     "chevrotain": "^11.1.1",

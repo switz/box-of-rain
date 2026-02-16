@@ -138,23 +138,10 @@ flowchart LR
     %% @route server-->robot toSide=right
 ```
 
-```
-╔══ Your Home WiFi ═╗            ╔══ China ══════════════╗
-║                   ║░░          ║                       ║░░
-║  ┏━━━━━━━━━━━━━┓  ║░░          ║  ┌┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┐  ║░░
-║  ┃             ┃  ║░░          ║  ┆                 ┆  ║░░
-║  ┃ Your iPhone ┃ ───── data ─────▶┆ Company Servers ┆ ─────┐
-║  ┃             ┃  ║░░          ║  ┆                 ┆  ║░░ │
-║  ┗━━━━━━━━━━━━━┛  ║░░          ║  └┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┘  ║░░ │
-║                   ║░░          ╚═══════════════════════╝░░ │
-║  ┏━━━━━━━━━━━━━┓  ║░░           ░░░░░░░░░░░░░░░░░░░░░░░░░░ │
-║  ┃             ┃  ║░░                                      │
-║  ┃ Your Robot  ┃◀─────────────── commands ─────────────────┘
-║  ┃             ┃  ║░░
-║  ┗━━━━━━━━━━━━━┛  ║░░
-╚═══════════════════╝░░
- ░░░░░░░░░░░░░░░░░░░░░░
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/vacuum-mermaid.svg">
+  <img src="docs/vacuum-mermaid.svg" alt="Vacuum diagram">
+</picture>
 
 Supported flowchart features:
 
@@ -183,17 +170,18 @@ Supported flowchart features:
 sequenceDiagram
     participant A as Alice
     participant B as Bob
-    A->>B: Hello
+    participant C as Server
+    A->>B: Hello Bob
+    B->>C: Auth request
+    C-->>B: Auth response
+    B-->>A: Hi Alice
 ```
 
-```
-┌── Alice ──┐           ┌── Bob ────┐
-│           │           │           │
-│  ┌─────┐  │           │  ┌─────┐  │
-│  │     │ ──── Hello ────▶│     │  │
-│  └─────┘  │           │  └─────┘  │
-└───────────┘           └───────────┘
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/sequence-mermaid.svg">
+  <img src="docs/sequence-mermaid.svg" alt="Sequence diagram">
+</picture>
+
 
 Supported sequence features:
 
