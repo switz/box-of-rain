@@ -1,0 +1,26 @@
+{
+  "children": [
+    {
+      "id": "outer",
+      "title": "Infrastructure",
+      "border": "double",
+      "children": [
+        {
+          "id": "middle",
+          "title": "Kubernetes",
+          "border": "bold",
+          "children": [
+            {
+              "id": "inner",
+              "title": "Pod",
+              "border": "single",
+              "children": [
+                { "id": "container", "children": ["App"] }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

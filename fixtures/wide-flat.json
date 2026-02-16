@@ -1,0 +1,17 @@
+{
+  "children": [
+    { "id": "input", "children": ["Input"] },
+    { "id": "parse", "children": ["Parse"] },
+    { "id": "validate", "children": ["Validate"] },
+    { "id": "transform", "children": ["Transform"] },
+    { "id": "enrich", "children": ["Enrich"] },
+    { "id": "output", "children": ["Output"] }
+  ],
+  "connections": [
+    { "from": "input", "to": "parse" },
+    { "from": "parse", "to": "validate" },
+    { "from": "validate", "to": "transform" },
+    { "from": "transform", "to": "enrich" },
+    { "from": "enrich", "to": "output" }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "children": [
+    { "id": "tiny", "children": ["OK"] },
+    { "id": "medium", "children": ["A medium-length label here"] },
+    { "id": "tall", "children": ["Line 1", "Line 2", "Line 3", "Line 4"] },
+    { "id": "wide", "children": ["This box has quite a long content line to test width"] }
+  ],
+  "connections": [
+    { "from": "tiny", "to": "medium" },
+    { "from": "medium", "to": "tall" },
+    { "from": "tall", "to": "wide" }
+  ]
+}

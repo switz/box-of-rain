@@ -1,0 +1,13 @@
+{
+  "children": [
+    { "id": "api", "children": ["API"], "border": "bold" },
+    { "id": "cache", "children": ["Cache"], "border": "single" },
+    { "id": "db", "children": ["Database"], "border": "single" },
+    { "id": "logs", "children": ["Logs"], "border": "dashed" },
+    { "id": "metrics", "children": ["Metrics"], "border": "dashed" }
+  ],
+  "connections": [
+    { "from": "api", "to": "cache" },
+    { "from": "api", "to": "db" }
+  ]
+}

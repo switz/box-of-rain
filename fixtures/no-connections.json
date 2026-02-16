@@ -1,0 +1,10 @@
+{
+  "children": [
+    { "id": "a", "children": ["Server A"], "border": "single" },
+    { "id": "b", "children": ["Server B"], "border": "double" },
+    { "id": "c", "children": ["Server C"], "border": "bold" },
+    { "id": "d", "children": ["Server D"], "border": "rounded" },
+    { "id": "e", "children": ["Server E"], "border": "dashed" },
+    { "id": "f", "children": ["Server F"], "border": "single", "shadow": true }
+  ]
+}

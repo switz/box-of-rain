@@ -32,6 +32,24 @@ function mergeJunction(existing: string, incoming: string, hDir: number): string
   return incoming;
 }
 
+/** Merge a horizontal dash with an existing corner character into a tee. */
+function mergeHorizontal(existing: string, _incoming: string): string {
+  // When a horizontal line crosses a corner, produce the appropriate tee
+  switch (existing) {
+    case '┐': return '┬';  // corner had right+down → add left = ┬
+    case '┌': return '┬';  // corner had left+down  → add right = ┬
+    case '┘': return '┴';  // corner had right+up   → add left = ┴
+    case '└': return '┴';  // corner had left+up    → add right = ┴
+    case '│': return '┼';  // vertical line → cross
+    case '┬': return '┬';
+    case '┴': return '┴';
+    case '┼': return '┼';
+    case '├': return '┼';
+    case '┤': return '┼';
+    default: return _incoming;
+  }
+}
+
 function placeLabel(canvas: Canvas, label: string, segStart: number, segEnd: number, y: number): void {
   const padded = ` ${label} `;
   const lo = Math.min(segStart, segEnd);
@@ -174,7 +192,8 @@ function drawStraight(
   const minX = Math.min(src.x, dst.x);
   const maxX = Math.max(src.x, dst.x);
   for (let col = minX + 1; col < maxX; col++) {
-    canvas.set(col, src.y, '─');
+    const existing = canvas.get(col, src.y);
+    canvas.set(col, src.y, mergeHorizontal(existing, '─'));
   }
   canvas.set(dst.x, dst.y, arrowHead);
 
@@ -183,8 +202,9 @@ function drawStraight(
   }
 }
 
-/** Compute a midX for an L-shaped connection, ensuring the label fits
- *  and all sibling connections from the same source share the same midX. */
+/** Compute a midX for an L-shaped connection, ensuring the label fits,
+ *  all sibling connections from the same source share the same midX,
+ *  and the vertical segment doesn't overlap with intervening boxes. */
 function computeLShapeMidX(
   src: { x: number; y: number },
   dst: { x: number; y: number },
@@ -200,11 +220,13 @@ function computeLShapeMidX(
   // and compute the minimum segment length needed for any of their labels
   let maxMinSeg = 0;
   const siblings = allConnections?.filter(c => c.from === fromId) ?? [];
+  const siblingDsts: { x: number; y: number }[] = [];
   for (const sib of siblings) {
     const sibTo = resolveBox(sib.to, boxes);
     if (!sibTo) continue;
     const sibDst = getAnchor(sibTo, 'left'); // approximate
     if (sibDst.y === src.y) continue; // straight, not L-shaped
+    siblingDsts.push(sibDst);
     if (sib.label) {
       const padded = ` ${sib.label} `;
       maxMinSeg = Math.max(maxMinSeg, padded.length + 2);
@@ -227,6 +249,7 @@ function computeLShapeMidX(
     }
   }
 
+
   return midX;
 }
 
@@ -243,14 +266,20 @@ function drawLShape(
 
   // Horizontal from source
   for (let col = src.x + hDir; col !== midX; col += hDir) {
-    canvas.set(col, src.y, '─');
+    const ex = canvas.get(col, src.y);
+    canvas.set(col, src.y, mergeHorizontal(ex, '─'));
   }
 
   // First corner — merge with existing character if another connection
-  // already drew a corner here (e.g. sibling L-shapes sharing a junction)
+  // already drew a corner or dash here
   const existing = canvas.get(midX, src.y);
   const corner = pickCorner(hDir, yDir);
-  canvas.set(midX, src.y, mergeJunction(existing, corner, hDir));
+  if (existing === '─') {
+    // A straight line already runs through here; produce a tee
+    canvas.set(midX, src.y, yDir > 0 ? '┬' : '┴');
+  } else {
+    canvas.set(midX, src.y, mergeJunction(existing, corner, hDir));
+  }
 
   // Vertical segment
   for (let row = src.y + yDir; row !== dst.y; row += yDir) {

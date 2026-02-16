@@ -148,4 +148,82 @@ describe('autoLayout', () => {
     assert.ok(boxes[0].x! < boxes[1].x!, 'a should be left of b');
     assert.ok(boxes[1].x! < boxes[2].x!, 'b should be left of c');
   });
+
+  it('arranges disconnected boxes in a grid when >4', () => {
+    const diagram: NodeDef = {
+      children: [
+        { id: 'a', children: ['A'] },
+        { id: 'b', children: ['B'] },
+        { id: 'c', children: ['C'] },
+        { id: 'd', children: ['D'] },
+        { id: 'e', children: ['E'] },
+        { id: 'f', children: ['F'] },
+      ],
+    };
+    const result = autoLayout(diagram);
+    const boxes = getChildBoxes(result)!;
+    // Should have 2 rows — some boxes share the same x (same column)
+    const xs = new Set(boxes.map(b => b.x!));
+    assert.ok(xs.size <= 4, 'should wrap into columns (not all unique x)');
+    // At least 2 distinct y values (2 rows)
+    const ys = new Set(boxes.map(b => b.y!));
+    assert.ok(ys.size >= 2, 'should have at least 2 rows');
+  });
+
+  it('spreads few disconnected boxes horizontally', () => {
+    const diagram: NodeDef = {
+      children: [
+        { id: 'a', children: ['A'] },
+        { id: 'b', children: ['B'] },
+        { id: 'c', children: ['C'] },
+      ],
+    };
+    const result = autoLayout(diagram);
+    const boxes = getChildBoxes(result)!;
+    // Each box should have a unique x (horizontal spread)
+    const xs = boxes.map(b => b.x!);
+    assert.ok(xs[0] < xs[1], 'a left of b');
+    assert.ok(xs[1] < xs[2], 'b left of c');
+  });
+
+  it('places disconnected boxes after connected ones in mixed layout', () => {
+    const diagram: NodeDef = {
+      children: [
+        { id: 'a', children: ['A'] },
+        { id: 'b', children: ['B'] },
+        { id: 'c', children: ['C'] },
+      ],
+      connections: [{ from: 'a', to: 'b' }],
+    };
+    const result = autoLayout(diagram);
+    const boxes = getChildBoxes(result)!;
+    const boxMap = new Map(boxes.map(b => [b.id, b]));
+    // c is disconnected; should be placed after b
+    assert.ok(boxMap.get('a')!.x! < boxMap.get('b')!.x!, 'a before b');
+    assert.ok(boxMap.get('b')!.x! < boxMap.get('c')!.x!, 'disconnected c after connected b');
+  });
+
+  it('handles nested 3-level deep boxes', () => {
+    const diagram: NodeDef = {
+      children: [{
+        id: 'outer',
+        border: 'double',
+        children: [{
+          id: 'middle',
+          border: 'bold',
+          children: [
+            { id: 'inner', children: ['Leaf'] },
+          ],
+        }],
+      }],
+    };
+    const result = autoLayout(diagram);
+    const outer = getChildBoxes(result)![0];
+    const middle = getChildBoxes(outer)![0];
+    const inner = getChildBoxes(middle)![0];
+    assert.ok(inner.width! > 0);
+    assert.ok(inner.height! > 0);
+    assert.ok(middle.width! > inner.width!);
+    assert.ok(outer.width! > middle.width!);
+  });
 });

@@ -275,6 +275,99 @@ describe('drawConnection', () => {
     assert.ok(row.includes('LONGISH'), `label should be visible, got: ${row}`);
   });
 
+  it('L-shape corner becomes tee when crossing a straight sibling connection', () => {
+    // Simulates the microservices scenario: gateway→auth (straight) and
+    // gateway→orders (L-shape going down). The L-shape corner on the same
+    // row as the straight line should merge into a ┬ tee junction.
+    const boxes: NodeDef[] = [
+      { id: 'gateway', x: 0, y: 2, width: 10, height: 5 },
+      { id: 'auth',    x: 20, y: 2, width: 10, height: 5 },
+      { id: 'orders',  x: 20, y: 10, width: 10, height: 5 },
+    ];
+    const allConns = [
+      { from: 'gateway', to: 'auth' },
+      { from: 'gateway', to: 'orders' },
+    ];
+    const c = new Canvas(35, 18);
+    drawBox(c, boxes[0] as any);
+    drawBox(c, boxes[1] as any);
+    drawBox(c, boxes[2] as any);
+    for (const conn of allConns) {
+      drawConnection(c, conn, boxes, allConns);
+    }
+    const srcY = 4; // center of gateway (y=2, height=5)
+    // The straight line gateway→auth runs across row 4.
+    // The L-shape gateway→orders turns down at some midX on row 4.
+    // That midX should have a ┬ (tee down), not a plain ┐ (corner).
+    let foundTee = false;
+    for (let x = 11; x < 19; x++) {
+      const ch = c.get(x, srcY);
+      if (ch === '┬') {
+        foundTee = true;
+        // Verify vertical segment continues down from the tee
+        assert.equal(c.get(x, srcY + 1), '│', 'vertical segment below tee');
+        break;
+      }
+    }
+    assert.ok(foundTee, 'should have a ┬ tee junction where L-shape branches off the straight line');
+    // Verify both arrows reach their targets
+    assert.equal(c.get(19, srcY), '▶', 'straight arrow reaches auth');
+    assert.equal(c.get(19, 12), '▶', 'L-shape arrow reaches orders');
+  });
+
+  it('straight line preserves existing L-shape corner as tee', () => {
+    // When the L-shape is drawn first and the straight line second,
+    // the straight should merge the corner into a tee, not overwrite it.
+    const boxes: NodeDef[] = [
+      { id: 'src',    x: 0, y: 2, width: 5, height: 3 },
+      { id: 'lower',  x: 20, y: 8, width: 5, height: 3 },
+      { id: 'right',  x: 20, y: 2, width: 5, height: 3 },
+    ];
+    const c = new Canvas(30, 14);
+    drawBox(c, boxes[0] as any);
+    drawBox(c, boxes[1] as any);
+    drawBox(c, boxes[2] as any);
+    // Draw L-shape first (to lower), then straight (to right)
+    drawConnection(c, { from: 'src', to: 'lower' }, boxes);
+    drawConnection(c, { from: 'src', to: 'right' }, boxes);
+    const srcY = 3; // center of src
+    // Find the tee
+    let foundTee = false;
+    for (let x = 6; x < 19; x++) {
+      if (c.get(x, srcY) === '┬') {
+        foundTee = true;
+        break;
+      }
+    }
+    assert.ok(foundTee, 'straight line should merge L-shape corner ┐ into ┬');
+  });
+
+  it('L-shape merges into tee when drawn over existing straight line', () => {
+    // When the straight line is drawn first and the L-shape second,
+    // the L-shape corner should detect the existing ─ and produce a tee.
+    const boxes: NodeDef[] = [
+      { id: 'src',    x: 0, y: 2, width: 5, height: 3 },
+      { id: 'right',  x: 20, y: 2, width: 5, height: 3 },
+      { id: 'lower',  x: 20, y: 8, width: 5, height: 3 },
+    ];
+    const c = new Canvas(30, 14);
+    drawBox(c, boxes[0] as any);
+    drawBox(c, boxes[1] as any);
+    drawBox(c, boxes[2] as any);
+    // Draw straight first, then L-shape
+    drawConnection(c, { from: 'src', to: 'right' }, boxes);
+    drawConnection(c, { from: 'src', to: 'lower' }, boxes);
+    const srcY = 3;
+    let foundTee = false;
+    for (let x = 6; x < 19; x++) {
+      if (c.get(x, srcY) === '┬') {
+        foundTee = true;
+        break;
+      }
+    }
+    assert.ok(foundTee, 'L-shape corner should merge with existing ─ into ┬');
+  });
+
   it('resolves nested child IDs', () => {
     const boxes: NodeDef[] = [
       {

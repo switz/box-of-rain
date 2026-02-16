@@ -172,7 +172,7 @@ function layoutHorizontal(children: NodeDef[], intraConns: ConnectionDef[], opts
   }
 
   const childHGap = 5;
-  const childVGap = 1;
+  const childVGap = 2;
   const layerGaps = computeLayerGaps(layers, intraConns, childHGap);
 
   let curX = opts.padLeft;
@@ -321,13 +321,63 @@ export function autoLayout(diagram: NodeDef, options?: LayoutOptions): NodeDef {
     layers[l].push(b);
   }
 
-  // Spread disconnected boxes into separate layers
+  // Handle disconnected boxes
   const hasTopEdges = [...topAdj.values()].some(s => s.size > 0);
   if (!hasTopEdges && layers.length === 1 && layers[0] && layers[0].length > 1) {
+    // All boxes are disconnected — arrange in a grid
     const allBoxes = layers[0];
     layers.length = 0;
-    for (const box of allBoxes) {
-      layers.push([box]);
+    if (allBoxes.length > 4) {
+      // Wrap into rows: distribute across columns, with ~2 rows
+      const cols = Math.ceil(allBoxes.length / 2);
+      for (let i = 0; i < allBoxes.length; i++) {
+        const col = i % cols;
+        if (!layers[col]) layers[col] = [];
+        layers[col].push(allBoxes[i]);
+      }
+    } else {
+      // Few boxes: one per layer (horizontal row)
+      for (const box of allBoxes) {
+        layers.push([box]);
+      }
+    }
+  } else if (hasTopEdges) {
+    // Mixed: some boxes are connected, some are not.
+    // Find disconnected boxes (those with no edges at all) still in layer 0
+    // and redistribute them after the last connected layer.
+    const connectedIds = new Set<string>();
+    for (const [id, neighbors] of topAdj) {
+      if (neighbors.size > 0) connectedIds.add(id);
+      for (const n of neighbors) connectedIds.add(n);
+    }
+    const disconnected: NodeDef[] = [];
+    for (let i = layers.length - 1; i >= 0; i--) {
+      if (!layers[i]) continue;
+      const remaining: NodeDef[] = [];
+      for (const box of layers[i]) {
+        if (box.id && !connectedIds.has(box.id)) {
+          disconnected.push(box);
+        } else {
+          remaining.push(box);
+        }
+      }
+      layers[i] = remaining;
+    }
+    // Append disconnected boxes as additional layers after the last connected layer
+    if (disconnected.length > 0) {
+      const lastLayer = layers.length;
+      if (disconnected.length > 4) {
+        const cols = Math.ceil(disconnected.length / 2);
+        for (let i = 0; i < disconnected.length; i++) {
+          const col = lastLayer + (i % cols);
+          if (!layers[col]) layers[col] = [];
+          layers[col].push(disconnected[i]);
+        }
+      } else {
+        for (const box of disconnected) {
+          layers.push([box]);
+        }
+      }
     }
   }
 

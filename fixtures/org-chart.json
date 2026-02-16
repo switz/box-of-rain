@@ -1,0 +1,17 @@
+{
+  "children": [
+    {
+      "id": "company",
+      "title": "Acme Corp",
+      "border": "double",
+      "childDirection": "vertical",
+      "children": [
+        { "id": "ceo", "children": ["CEO"], "border": "bold" },
+        { "id": "cto", "children": ["CTO"], "border": "single" },
+        { "id": "cfo", "children": ["CFO"], "border": "single" },
+        { "id": "vp-eng", "children": ["VP Engineering"], "border": "rounded" },
+        { "id": "vp-sales", "children": ["VP Sales"], "border": "rounded" }
+      ]
+    }
+  ]
+}
