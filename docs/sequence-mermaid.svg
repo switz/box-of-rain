@@ -16,19 +16,19 @@
   <text x="16" y="44" xml:space="preserve">┌── Alice ───┐                   ┌── Bob ─────┐                   ┌── Server ──┐</text>
   <text x="16" y="58" xml:space="preserve">│            │                   │            │                   │            │</text>
   <text x="16" y="72" xml:space="preserve">│  ┌──────┐  │                   │  ┌──────┐  │                   │  ┌──────┐  │</text>
-  <text x="16" y="86" xml:space="preserve">│  │      │ ────── Hello Bob ──────▶│      │  │                   │  │      │  │</text>
+  <text x="16" y="86" xml:space="preserve">│  │      │ ─┼──── Hello Bob ────┼─▶│      │  │                   │  │      │  │</text>
   <text x="16" y="100" xml:space="preserve">│  └──────┘  │                   │  └──────┘  │                   │  └──────┘  │</text>
   <text x="16" y="114" xml:space="preserve">│            │                   │            │                   │            │</text>
   <text x="16" y="128" xml:space="preserve">│  ┌──────┐  │                   │  ┌──────┐  │                   │  ┌──────┐  │</text>
-  <text x="16" y="142" xml:space="preserve">│  │      │  │                   │  │      │ ──── Auth request ─────▶│      │  │</text>
+  <text x="16" y="142" xml:space="preserve">│  │      │  │                   │  │      │ ─┼── Auth request ───┼─▶│      │  │</text>
   <text x="16" y="156" xml:space="preserve">│  └──────┘  │                   │  └──────┘  │                   │  └──────┘  │</text>
   <text x="16" y="170" xml:space="preserve">│            │                   │            │                   │            │</text>
   <text x="16" y="184" xml:space="preserve">│  ┌──────┐  │                   │  ┌──────┐  │                   │  ┌──────┐  │</text>
-  <text x="16" y="198" xml:space="preserve">│  │      │  │                   │  │      │◀──── Auth response ──── │      │  │</text>
+  <text x="16" y="198" xml:space="preserve">│  │      │  │                   │  │      │◀─┼── Auth response ──┼─ │      │  │</text>
   <text x="16" y="212" xml:space="preserve">│  └──────┘  │                   │  └──────┘  │                   │  └──────┘  │</text>
   <text x="16" y="226" xml:space="preserve">│            │                   │            │                   │            │</text>
   <text x="16" y="240" xml:space="preserve">│  ┌──────┐  │                   │  ┌──────┐  │                   │  ┌──────┐  │</text>
-  <text x="16" y="254" xml:space="preserve">│  │      │◀────── Hi Alice ─────── │      │  │                   │  │      │  │</text>
+  <text x="16" y="254" xml:space="preserve">│  │      │◀─┼──── Hi Alice ─────┼─ │      │  │                   │  │      │  │</text>
   <text x="16" y="268" xml:space="preserve">│  └──────┘  │                   │  └──────┘  │                   │  └──────┘  │</text>
   <text x="16" y="282" xml:space="preserve">└────────────┘                   └────────────┘                   └────────────┘</text>
   <text x="16" y="296" xml:space="preserve"></text>

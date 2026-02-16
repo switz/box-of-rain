@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 234 508" width="234" height="508">
+  <style>
+    text {
+      font-family: 'SFMono-Regular', Menlo, Monaco, 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1;
+      fill: #24292f;
+    }
+    @media (prefers-color-scheme: dark) {
+      text { fill: #e6edf3; }
+      .bg { fill: #161b22; }
+    }
+  </style>
+  <rect class="bg" width="100%" height="100%" fill="#f6f8fa" rx="6" />
+  <text x="16" y="30" xml:space="preserve"></text>
+  <text x="16" y="44" xml:space="preserve">╔══ Acme Corp ═════════╗</text>
+  <text x="16" y="58" xml:space="preserve">║                      ║</text>
+  <text x="16" y="72" xml:space="preserve">║  ┏━━━━━━━━━━┓        ║</text>
+  <text x="16" y="86" xml:space="preserve">║  ┃          ┃        ║</text>
+  <text x="16" y="100" xml:space="preserve">║  ┃   CEO    ┃        ║</text>
+  <text x="16" y="114" xml:space="preserve">║  ┃          ┃        ║</text>
+  <text x="16" y="128" xml:space="preserve">║  ┗━━━━━━━━━━┛        ║</text>
+  <text x="16" y="142" xml:space="preserve">║                      ║</text>
+  <text x="16" y="156" xml:space="preserve">║  ┌──────────┐        ║</text>
+  <text x="16" y="170" xml:space="preserve">║  │          │        ║</text>
+  <text x="16" y="184" xml:space="preserve">║  │   CTO    │        ║</text>
+  <text x="16" y="198" xml:space="preserve">║  │          │        ║</text>
+  <text x="16" y="212" xml:space="preserve">║  └──────────┘        ║</text>
+  <text x="16" y="226" xml:space="preserve">║                      ║</text>
+  <text x="16" y="240" xml:space="preserve">║  ┌──────────┐        ║</text>
+  <text x="16" y="254" xml:space="preserve">║  │          │        ║</text>
+  <text x="16" y="268" xml:space="preserve">║  │   CFO    │        ║</text>
+  <text x="16" y="282" xml:space="preserve">║  │          │        ║</text>
+  <text x="16" y="296" xml:space="preserve">║  └──────────┘        ║</text>
+  <text x="16" y="310" xml:space="preserve">║                      ║</text>
+  <text x="16" y="324" xml:space="preserve">║  ╭────────────────╮  ║</text>
+  <text x="16" y="338" xml:space="preserve">║  │                │  ║</text>
+  <text x="16" y="352" xml:space="preserve">║  │ VP Engineering │  ║</text>
+  <text x="16" y="366" xml:space="preserve">║  │                │  ║</text>
+  <text x="16" y="380" xml:space="preserve">║  ╰────────────────╯  ║</text>
+  <text x="16" y="394" xml:space="preserve">║                      ║</text>
+  <text x="16" y="408" xml:space="preserve">║  ╭──────────╮        ║</text>
+  <text x="16" y="422" xml:space="preserve">║  │          │        ║</text>
+  <text x="16" y="436" xml:space="preserve">║  │ VP Sales │        ║</text>
+  <text x="16" y="450" xml:space="preserve">║  │          │        ║</text>
+  <text x="16" y="464" xml:space="preserve">║  ╰──────────╯        ║</text>
+  <text x="16" y="478" xml:space="preserve">╚══════════════════════╝</text>
+  <text x="16" y="492" xml:space="preserve"></text>
+</svg>
