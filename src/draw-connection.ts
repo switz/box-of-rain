@@ -32,21 +32,17 @@ function mergeJunction(existing: string, incoming: string, hDir: number): string
   return incoming;
 }
 
-/** Merge a horizontal dash with an existing corner character into a tee. */
-function mergeHorizontal(existing: string, _incoming: string): string {
-  // When a horizontal line crosses a corner, produce the appropriate tee
+/** Merge a horizontal dash with an existing connection corner into a tee.
+ *  Connection corners become tees; everything else gets overwritten. */
+function mergeHorizontal(existing: string, incoming: string): string {
   switch (existing) {
-    case '┐': return '┬';  // corner had right+down → add left = ┬
-    case '┌': return '┬';  // corner had left+down  → add right = ┬
-    case '┘': return '┴';  // corner had right+up   → add left = ┴
-    case '└': return '┴';  // corner had left+up    → add right = ┴
-    case '│': return '┼';  // vertical line → cross
+    case '┐': return '┬';
+    case '┌': return '┬';
+    case '┘': return '┴';
+    case '└': return '┴';
     case '┬': return '┬';
     case '┴': return '┴';
-    case '┼': return '┼';
-    case '├': return '┼';
-    case '┤': return '┼';
-    default: return _incoming;
+    default: return incoming;
   }
 }
 

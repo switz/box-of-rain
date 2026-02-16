@@ -368,6 +368,24 @@ describe('drawConnection', () => {
     assert.ok(foundTee, 'L-shape corner should merge with existing ─ into ┬');
   });
 
+  it('straight connection overwrites box borders with dash, not cross', () => {
+    // A connection line passing through a box border should overwrite │ with ─,
+    // NOT merge it into ┼
+    const boxes: NodeDef[] = [
+      { id: 'a', x: 0, y: 0, width: 5, height: 3 },
+      { id: 'mid', x: 10, y: 0, width: 5, height: 3 },
+      { id: 'b', x: 20, y: 0, width: 5, height: 3 },
+    ];
+    const c = new Canvas(30, 5);
+    drawBox(c, boxes[0] as any);
+    drawBox(c, boxes[1] as any);
+    drawBox(c, boxes[2] as any);
+    drawConnection(c, { from: 'a', to: 'b' }, boxes);
+    // The mid box borders should be overwritten with ─, NOT turned into ┼
+    assert.notEqual(c.get(10, 1), '┼', 'box left border should not become ┼');
+    assert.notEqual(c.get(14, 1), '┼', 'box right border should not become ┼');
+  });
+
   it('resolves nested child IDs', () => {
     const boxes: NodeDef[] = [
       {
