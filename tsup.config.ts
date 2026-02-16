@@ -7,11 +7,15 @@ export default defineConfig([
     dts: true,
     clean: true,
     outDir: 'dist',
+    minify: true,
+    sourcemap: true,
   },
   {
     entry: { cli: 'src/cli.ts' },
     format: ['esm'],
     banner: { js: '#!/usr/bin/env node' },
     outDir: 'dist',
+    minify: true,
+    sourcemap: true,
   },
 ]);

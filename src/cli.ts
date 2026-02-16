@@ -119,6 +119,12 @@ function main(): void {
     process.exit(0);
   }
 
+  if (args.includes('--version') || args.includes('-v')) {
+    const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf-8'));
+    console.log(pkg.version);
+    process.exit(0);
+  }
+
   if (args.includes('--example')) {
     runExample();
     process.exit(0);
