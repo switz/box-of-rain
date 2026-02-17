@@ -5,6 +5,12 @@
 
 # box-of-rain
 
+## Quickstart
+
+```bash
+npx box-of-rain --example
+```
+
 [![Tests](https://github.com/switz/box-of-rain/actions/workflows/test.yml/badge.svg)](https://github.com/switz/box-of-rain/actions/workflows/test.yml)
 [![min+gzip size](https://img.shields.io/bundlejs/size/box-of-rain)](https://bundlejs.com/?q=box-of-rain)
 [![npm](https://img.shields.io/npm/v/box-of-rain)](https://www.npmjs.com/package/box-of-rain)
@@ -259,8 +265,10 @@ const svg = renderSvg(render(diagram));
 
 ### From Mermaid
 
+Mermaid support lives in a separate subpath export (`box-of-rain/mermaid`) so that the main entry point stays lightweight and doesn't pull in the chevrotain parser.
+
 ```typescript
-import { renderMermaid, parseMermaid } from 'box-of-rain';
+import { renderMermaid, parseMermaid } from 'box-of-rain/mermaid';
 
 // One-step render:
 console.log(renderMermaid(`

@@ -1,6 +1,5 @@
 // Public API
 export { render, renderSvg } from './render.js';
-export { parseMermaid, renderMermaid } from './mermaid/index.js';
 export { autoLayout } from './layout.js';
 export { Canvas } from './canvas.js';
 export { drawBox } from './draw-box.js';

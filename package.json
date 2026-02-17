@@ -1,6 +1,6 @@
 {
   "name": "box-of-rain",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Generate beautiful ASCII box diagrams with borders, arrows, shadows, and nesting",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -15,6 +15,16 @@
       "require": {
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
+      }
+    },
+    "./mermaid": {
+      "import": {
+        "types": "./dist/mermaid.d.ts",
+        "default": "./dist/mermaid.js"
+      },
+      "require": {
+        "types": "./dist/mermaid.d.cts",
+        "default": "./dist/mermaid.cjs"
       }
     }
   },
