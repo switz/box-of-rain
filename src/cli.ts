@@ -148,7 +148,7 @@ function main(): void {
     raw = readFileSync(filePath, 'utf-8');
     ext = extname(filePath).toLowerCase();
   } else if (!process.stdin.isTTY) {
-    raw = readFileSync('/dev/stdin', 'utf-8');
+    raw = readFileSync(0, 'utf-8');
     ext = '';
   } else {
     printUsage();
