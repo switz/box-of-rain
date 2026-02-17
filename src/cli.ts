@@ -16,6 +16,11 @@ Usage:
   box-of-rain --svg <diagram.json|diagram.yaml>    # SVG output
   box-of-rain --example
 
+Stdin:
+  cat diagram.json | box-of-rain                   # JSON from stdin
+  cat diagram.mmd  | box-of-rain --mermaid         # Mermaid from stdin
+  cat diagram.yaml | box-of-rain --yaml            # YAML from stdin
+
 Diagram JSON format (positions and sizes are optional — auto-layout fills them in):
 {
   "children": [
@@ -114,7 +119,7 @@ function migrateNode(node: NodeDef): NodeDef {
 function main(): void {
   const args = process.argv.slice(2);
 
-  if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
+  if (args.includes('--help') || args.includes('-h')) {
     printUsage();
     process.exit(0);
   }
@@ -132,17 +137,32 @@ function main(): void {
 
   const svg = args.includes('--svg');
   const mermaidFlag = args.includes('--mermaid');
+  const yamlFlag = args.includes('--yaml');
   const fileArgs = args.filter(a => !a.startsWith('--'));
-  const filePath = resolve(fileArgs[0]);
+
+  let raw: string;
+  let ext: string;
+
+  if (fileArgs.length > 0) {
+    const filePath = resolve(fileArgs[0]);
+    raw = readFileSync(filePath, 'utf-8');
+    ext = extname(filePath).toLowerCase();
+  } else if (!process.stdin.isTTY) {
+    raw = readFileSync('/dev/stdin', 'utf-8');
+    ext = '';
+  } else {
+    printUsage();
+    process.exit(0);
+  }
+
   try {
-    const raw = readFileSync(filePath, 'utf-8');
-    const ext = extname(filePath).toLowerCase();
     const isMermaid = mermaidFlag || ext === '.mmd' || ext === '.mermaid';
+    const isYaml = yamlFlag || ext === '.yaml' || ext === '.yml';
     let diagram: NodeDef;
     if (isMermaid) {
       diagram = parseMermaid(raw);
     } else {
-      const parsed = (ext === '.yaml' || ext === '.yml')
+      const parsed = isYaml
         ? yaml.load(raw)
         : JSON.parse(raw);
       diagram = migrate(parsed as Record<string, unknown>);

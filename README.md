@@ -8,7 +8,14 @@
 ## Quickstart
 
 ```bash
-npx box-of-rain --example
+$ echo 'flowchart LR
+    web([Frontend])
+    subgraph platform [Cloud Platform]
+      api([API Server])
+      db[(Database)]
+      api --> db
+    end
+    web -->|HTTPS| api' | npx box-of-rain --mermaid
 ```
 
 [![Tests](https://github.com/switz/box-of-rain/actions/workflows/test.yml/badge.svg)](https://github.com/switz/box-of-rain/actions/workflows/test.yml)
@@ -52,6 +59,17 @@ npx box-of-rain diagram.yaml          # render a diagram from YAML
 npx box-of-rain diagram.mmd           # render a diagram from Mermaid
 npx box-of-rain --mermaid diagram.txt # force Mermaid parsing
 npx box-of-rain --svg diagram.json    # SVG output
+```
+
+### Stdin
+
+You can pipe input via stdin instead of passing a file path. JSON is the default format; use `--mermaid` or `--yaml` to override.
+
+```bash
+cat diagram.json | npx box-of-rain
+cat diagram.mmd  | npx box-of-rain --mermaid
+cat diagram.yaml | npx box-of-rain --yaml
+echo '{"children":[{"id":"a","children":["Hello"]},{"id":"b","children":["World"]}],"connections":[{"from":"a","to":"b"}]}' | npx box-of-rain
 ```
 
 ## Schema
