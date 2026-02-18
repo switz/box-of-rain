@@ -438,7 +438,58 @@ export function autoLayout(diagram: NodeDef, options?: LayoutOptions): NodeDef {
     layerIdx++;
   }
 
-  // Step 5: Auto-size canvas
+  // Step 5: Align single-box columns with their cross-level connection targets
+  // When a top-level box connects to a nested child inside another top-level box,
+  // shift the single box so its vertical center matches the nested child's center.
+  const boxToLayer = new Map<string, number>();
+  for (let i = 0; i < layers.length; i++) {
+    if (!layers[i]) continue;
+    for (const box of layers[i]) {
+      if (box.id) boxToLayer.set(box.id, i);
+    }
+  }
+
+  for (const conn of clonedConns) {
+    // Find the top-level box for each end
+    const fromTop = topIds.has(conn.from) ? conn.from : childToParent.get(conn.from);
+    const toTop = topIds.has(conn.to) ? conn.to : childToParent.get(conn.to);
+    if (!fromTop || !toTop || fromTop === toTop) continue;
+
+    // Check if one end is a nested child and the other is a top-level box
+    const fromIsNested = !topIds.has(conn.from);
+    const toIsNested = !topIds.has(conn.to);
+    if (!fromIsNested && !toIsNested) continue;
+
+    // The top-level box that we want to shift (the non-nested end)
+    const shiftId = fromIsNested ? conn.to : conn.from;
+    const nestedId = fromIsNested ? conn.from : conn.to;
+    const nestedParentId = fromIsNested ? fromTop : toTop;
+
+    // Only shift if the box is alone in its layer
+    const shiftLayer = boxToLayer.get(shiftId);
+    if (shiftLayer == null) continue;
+    if (layers[shiftLayer] && layers[shiftLayer].length > 1) continue;
+
+    const shiftBox = clonedChildren.find(b => b.id === shiftId);
+    const parentBox = clonedChildren.find(b => b.id === nestedParentId);
+    if (!shiftBox || !parentBox) continue;
+
+    // Find the nested child inside the parent
+    const parentChildren = getChildBoxes(parentBox);
+    const nestedChild = parentChildren?.find(c => c.id === nestedId);
+    if (!nestedChild) continue;
+
+    // Calculate the nested child's absolute vertical center
+    // parentBox.y + 1 (border) + nestedChild.y + floor(nestedChild.height / 2)
+    const nestedCenterY = (parentBox.y ?? 0) + 1 + (nestedChild.y ?? 0) + Math.floor((nestedChild.height ?? 0) / 2);
+    const desiredY = nestedCenterY - Math.floor((shiftBox.height ?? 0) / 2);
+
+    if (desiredY >= 0) {
+      shiftBox.y = desiredY;
+    }
+  }
+
+  // Step 6: Auto-size canvas
   autoSizeCanvas(cloned);
 
   return cloned;

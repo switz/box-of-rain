@@ -1,6 +1,6 @@
 {
   "name": "box-of-rain",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Generate beautiful ASCII box diagrams with borders, arrows, shadows, and nesting",
   "type": "module",
   "main": "./dist/index.cjs",

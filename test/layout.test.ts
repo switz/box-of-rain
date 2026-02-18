@@ -203,6 +203,94 @@ describe('autoLayout', () => {
     assert.ok(boxMap.get('b')!.x! < boxMap.get('c')!.x!, 'disconnected c after connected b');
   });
 
+  it('aligns top-level box with nested connection target', () => {
+    // Frontend connects to API Server inside Cloud Platform
+    const diagram: NodeDef = {
+      children: [
+        { id: 'web', children: ['Frontend'], border: 'rounded' },
+        {
+          id: 'platform',
+          title: 'Cloud Platform',
+          border: 'double',
+          children: [
+            { id: 'api', children: ['API Server'] },
+            { id: 'db', children: ['Database'] },
+          ],
+          connections: [{ from: 'api', to: 'db' }],
+        },
+      ],
+      connections: [{ from: 'web', to: 'api', label: 'HTTPS' }],
+    };
+    const result = autoLayout(diagram);
+    const boxes = getChildBoxes(result)!;
+    const web = boxes.find(b => b.id === 'web')!;
+    const platform = boxes.find(b => b.id === 'platform')!;
+    const api = getChildBoxes(platform)!.find(b => b.id === 'api')!;
+
+    // web's vertical center should match api's absolute vertical center
+    const webCenter = web.y! + Math.floor(web.height! / 2);
+    const apiAbsCenter = platform.y! + 1 + api.y! + Math.floor(api.height! / 2);
+    assert.equal(webCenter, apiAbsCenter, 'Frontend center should align with API Server center');
+  });
+
+  it('aligns when connection goes from nested child to top-level box', () => {
+    const diagram: NodeDef = {
+      children: [
+        {
+          id: 'group',
+          border: 'double',
+          title: 'Group',
+          children: [
+            { id: 'a', children: ['A'] },
+            { id: 'b', children: ['B'] },
+          ],
+          connections: [{ from: 'a', to: 'b' }],
+        },
+        { id: 'ext', children: ['External'] },
+      ],
+      connections: [{ from: 'b', to: 'ext' }],
+    };
+    const result = autoLayout(diagram);
+    const boxes = getChildBoxes(result)!;
+    const group = boxes.find(b => b.id === 'group')!;
+    const ext = boxes.find(b => b.id === 'ext')!;
+    const b = getChildBoxes(group)!.find(c => c.id === 'b')!;
+
+    const extCenter = ext.y! + Math.floor(ext.height! / 2);
+    const bAbsCenter = group.y! + 1 + b.y! + Math.floor(b.height! / 2);
+    assert.equal(extCenter, bAbsCenter, 'External center should align with B center');
+  });
+
+  it('does not shift multi-box columns for cross-level alignment', () => {
+    const diagram: NodeDef = {
+      children: [
+        { id: 'x', children: ['X'] },
+        { id: 'y', children: ['Y'] },
+        {
+          id: 'group',
+          border: 'double',
+          title: 'Group',
+          children: [
+            { id: 'a', children: ['A'] },
+            { id: 'b', children: ['B'] },
+          ],
+          connections: [{ from: 'a', to: 'b' }],
+        },
+      ],
+      connections: [
+        { from: 'x', to: 'a' },
+        { from: 'y', to: 'b' },
+      ],
+    };
+    const result = autoLayout(diagram);
+    const boxes = getChildBoxes(result)!;
+    const x = boxes.find(b => b.id === 'x')!;
+    const y = boxes.find(b => b.id === 'y')!;
+    // x and y are in the same column (both connect into group), so they should NOT be shifted
+    // Just verify they have valid positions and x is above y
+    assert.ok(x.y! < y.y!, 'x should be above y in the same column');
+  });
+
   it('handles nested 3-level deep boxes', () => {
     const diagram: NodeDef = {
       children: [{
